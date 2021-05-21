@@ -6,6 +6,7 @@ use std::process;
 enum Problem {
     Day1(String),
     Day2(String),
+    Day3(String),
 }
 
 // Assumes that [v] is sorted
@@ -130,15 +131,49 @@ fn day2(filename: String) {
     println!("check2 {}", check2)
 }
 
+fn check_slope(map: &Vec<Vec<u8>>, right: usize, down: usize) -> usize {
+    let mut i = 0;
+    let mut j = 0;
+    let mut n = 0;
+    let len = map[0].len();
+    while i < map.len() {
+        if map[i][j % len] == b'#' {
+            n += 1
+        };
+        i += down;
+        j += right
+    }
+    return n;
+}
+
+fn day3(filename: String) {
+    let file = File::open(filename).unwrap();
+    let reader = BufReader::new(file);
+    let mut map: Vec<Vec<u8>> = Vec::new();
+    for (_index, line) in reader.lines().enumerate() {
+        let line = line.unwrap();
+        let line = line.as_bytes();
+        map.push(line.to_vec())
+    }
+
+    let s11 = check_slope(&map, 1, 1);
+    let s31 = check_slope(&map, 3, 1);
+    let s51 = check_slope(&map, 5, 1);
+    let s71 = check_slope(&map, 7, 1);
+    let s12 = check_slope(&map, 1, 2);
+    println!("{}", s31);
+    println!("{}", s11 * s31 * s51 * s71 * s12);
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     #[test]
-    fn day2_example() {
+    fn day2_example1() {
         let password = Password::parse("1-3 a: abcde".to_string()).unwrap();
-        assert!(Password::check(&password));
+        assert!(Password::check1(&password));
         let password = Password::parse("1-3 b: cdefg".to_string()).unwrap();
-        assert!(!(Password::check(&password)))
+        assert!(!(Password::check1(&password)))
     }
 }
 impl Problem {
@@ -160,6 +195,12 @@ impl Problem {
                 };
                 return Ok(Problem::Day2(args[2].clone()));
             }
+            "3" => {
+                if args.len() < 3 {
+                    return Err("not enough arguments");
+                };
+                return Ok(Problem::Day3(args[2].clone()));
+            }
             _ => return Err("Problem not yet implemented"),
         }
     }
@@ -174,5 +215,6 @@ fn main() {
     match problem {
         Problem::Day1(filename) => day1(filename),
         Problem::Day2(filename) => day2(filename),
+        Problem::Day3(filename) => day3(filename),
     }
 }
