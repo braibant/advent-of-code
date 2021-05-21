@@ -6,12 +6,15 @@ enum Problem {
     Day2(String),
     Day3(String),
     Day4(String),
+    Day5(String),
 }
 
 mod day1;
 mod day2;
 mod day3;
 mod day4;
+
+mod day5;
 
 impl Problem {
     fn new(args: &[String]) -> Result<Problem, &str> {
@@ -32,6 +35,9 @@ impl Problem {
             "4" => {
                 return Ok(Problem::Day4(args[2].clone()));
             }
+            "5" => {
+                return Ok(Problem::Day5(args[2].clone()));
+            }
             _ => return Err("Problem not yet implemented"),
         }
     }
@@ -48,5 +54,6 @@ fn main() {
         Problem::Day2(filename) => day2::run(filename),
         Problem::Day3(filename) => day3::run(filename),
         Problem::Day4(filename) => day4::run(filename),
+        Problem::Day5(filename) => day5::run(filename),
     }
 }
