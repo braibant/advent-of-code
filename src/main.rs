@@ -9,8 +9,8 @@ enum Problem {
     Day5(String),
     Day6(String),
     Day7(String),
+    Day8(String),
 }
-
 mod day1;
 mod day2;
 mod day3;
@@ -18,6 +18,7 @@ mod day4;
 mod day5;
 mod day6;
 mod day7;
+mod day8;
 
 impl Problem {
     fn new(args: &[String]) -> Result<Problem, &str> {
@@ -47,6 +48,9 @@ impl Problem {
             "7" => {
                 return Ok(Problem::Day7(args[2].clone()));
             }
+            "8" => {
+                return Ok(Problem::Day8(args[2].clone()));
+            }
             _ => return Err("Problem not yet implemented"),
         }
     }
@@ -66,5 +70,6 @@ fn main() {
         Problem::Day5(filename) => day5::run(filename),
         Problem::Day6(filename) => day6::run(filename),
         Problem::Day7(filename) => day7::run(filename),
+        Problem::Day8(filename) => day8::run(filename),
     }
 }
