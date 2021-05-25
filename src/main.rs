@@ -1,6 +1,7 @@
 use std::env;
 
 mod day1;
+mod day10;
 mod day2;
 mod day3;
 mod day4;
@@ -23,6 +24,7 @@ fn main() {
         "7" => day7::run(filename),
         "8" => day8::run(filename),
         "9" => day9::run(filename),
+        "10" => day10::run(filename),
         _ => panic!("Not yet implemented"),
     }
 }
