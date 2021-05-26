@@ -74,7 +74,7 @@ pub fn run(filename: String) {
                 wy += k * dy;
             }
             Action::Rotate(n) => {
-                for i in 0..*n {
+                for _i in 0..*n {
                     let wx0 = wx;
                     let wy0 = wy;
 
