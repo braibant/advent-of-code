@@ -34,21 +34,6 @@ fn count(grid: &Vec<Vec<T>>) -> u32 {
     return count;
 }
 
-fn print(grid: &Vec<Vec<T>>) {
-    for i in 0..grid.len() {
-        for j in 0..grid[i].len() {
-            if grid[i][j] == T::O {
-                print!("#")
-            } else if grid[i][j] == T::E {
-                print!("L")
-            } else {
-                print!(".")
-            }
-        }
-        print!("\n");
-    }
-}
-
 fn step<F>(grid: &mut Vec<Vec<T>>, count: F, bound: u32) -> bool
 where
     F: Fn(&Vec<Vec<T>>, i32, i32) -> u32,
