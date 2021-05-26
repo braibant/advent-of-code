@@ -1,5 +1,8 @@
 use std::env;
 
+#[macro_use]
+extern crate scan_fmt;
+
 mod day1;
 mod day2;
 mod day3;
@@ -14,6 +17,7 @@ mod day10;
 mod day11;
 mod day12;
 mod day13;
+mod day14;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -32,6 +36,7 @@ fn main() {
         "11" => day11::run(filename),
         "12" => day12::run(filename),
         "13" => day13::run(filename),
+        "14" => day14::run(filename),
         _ => panic!("Not yet implemented"),
     }
 }
