@@ -28,7 +28,7 @@ pub fn run(filename: String) {
     let file = File::open(filename).unwrap();
     let reader = BufReader::new(file);
 
-    let mut adapters: Vec<(u32)> = Vec::new();
+    let mut adapters: Vec<u32> = Vec::new();
     for line in reader.lines() {
         let line = line.unwrap();
         let joltage: u32 = line.parse().unwrap();

@@ -1,6 +1,4 @@
 use std::collections::HashMap;
-use std::fs::File;
-use std::io::{BufRead, BufReader};
 
 fn step(state: &mut HashMap<u32, u32>, turn: u32, num: u32) -> u32 {
     let previous = state.entry(num).or_insert(turn - 1);
@@ -36,16 +34,4 @@ pub fn run() {
     let nums = vec![15, 5, 1, 4, 7, 0];
     println!("{}", play(&nums, 2020));
     println!("{}", play(&nums, 30000000));
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    #[test]
-    fn example_1() {
-        let v = vec![0, 3, 6];
-        assert_eq!(play(v, 2020), 436);
-        let v = vec![1, 3, 2];
-        assert_eq!(play(v, 2020), 1)
-    }
 }

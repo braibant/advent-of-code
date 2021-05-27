@@ -3,9 +3,9 @@ use std::fmt;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
-struct u36(u64);
+struct U36(u64);
 
-impl fmt::Debug for u36 {
+impl fmt::Debug for U36 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.pad(&format!("{:b}", self.0))
     }
@@ -14,7 +14,7 @@ impl fmt::Debug for u36 {
 #[derive(Debug)]
 enum Instruction {
     // Use three masks to avoid some bit fiddling later on
-    Mask(u36, u36, u36),
+    Mask(U36, U36, U36),
     Mem(u64, u64),
 }
 
@@ -36,7 +36,7 @@ fn parse(s: &str) -> Instruction {
             }
             i = i >> 1;
         }
-        return Instruction::Mask(u36(mask1), u36(mask0), u36(maskx));
+        return Instruction::Mask(U36(mask1), U36(mask0), U36(maskx));
     };
     if let Ok((addr, value)) = scan_fmt!(s, "mem[{d}] = {d}", u64, u64) {
         return Instruction::Mem(addr, value);
@@ -52,7 +52,7 @@ fn part1(prog: &Vec<Instruction>) {
     let mut mem = HashMap::new();
     for i in prog.iter() {
         match i {
-            Instruction::Mask(u36(m1), u36(m0), _) => {
+            Instruction::Mask(U36(m1), U36(m0), _) => {
                 mask1 = *m1;
                 mask0 = *m0;
             }
@@ -90,7 +90,7 @@ fn part2(prog: &Vec<Instruction>) {
     let mut mem = HashMap::new();
     for (_index, instruction) in prog.iter().enumerate() {
         match instruction {
-            Instruction::Mask(u36(m1), u36(_m0), u36(mx)) => {
+            Instruction::Mask(U36(m1), U36(_m0), U36(mx)) => {
                 mask1 = *m1;
                 maskx = *mx;
             }
