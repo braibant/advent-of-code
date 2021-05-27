@@ -20,6 +20,16 @@ mod day13;
 mod day14;
 mod day15;
 mod day16;
+mod day17;
+mod day18;
+mod day19;
+//
+mod day20;
+mod day21;
+mod day22;
+mod day23;
+mod day24;
+mod day25;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -41,6 +51,15 @@ fn main() {
         "14" => day14::run(filename),
         "15" => day15::run(),
         "16" => day16::run(filename),
+        "17" => day17::run(filename),
+        "18" => day18::run(filename),
+        "19" => day19::run(filename),
+        "20" => day20::run(filename),
+        "21" => day21::run(filename),
+        "22" => day22::run(filename),
+        "23" => day23::run(filename),
+        "24" => day24::run(filename),
+        "25" => day25::run(filename),
         _ => panic!("Not yet implemented"),
     }
 }
