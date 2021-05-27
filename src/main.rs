@@ -3,6 +3,9 @@ use std::env;
 #[macro_use]
 extern crate scan_fmt;
 
+#[macro_use]
+extern crate lazy_static;
+
 mod day1;
 mod day2;
 mod day3;
