@@ -10,3 +10,4 @@ edition = "2018"
 [dependencies]
 scan_fmt = "0.2.6"
 lazy_static = "1.4.0"
+nom = "6.1.2"

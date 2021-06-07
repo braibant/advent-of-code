@@ -96,14 +96,14 @@ pub fn run(filename: String) {
     }
 
     let mut cubes = init.clone();
-    for i in 0..6 {
+    for _i in 0..6 {
         cubes = step(&cubes, &DIRS3);
     }
 
     println!("{}", cubes.len());
 
     let mut cubes = init.clone();
-    for i in 0..6 {
+    for _i in 0..6 {
         cubes = step(&cubes, &DIRS4);
     }
 
