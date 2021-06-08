@@ -30,21 +30,21 @@ fn sub_rule(input: &str) -> IResult<&str, Vec<u64>> {
 
 // The format of rule is `ID: SUB_RULE | ... | SUB_RULE`
 fn rule(input: &str) -> IResult<&str, T> {
-    let mut sub_rules = nom::multi::separated_list1(tag(" | "), sub_rule);
+    let sub_rules = nom::multi::separated_list1(tag(" | "), sub_rule);
 
-    let mut rule = nom::sequence::tuple((id, tag(": "), sub_rules));
+    let rule = nom::sequence::tuple((id, tag(": "), sub_rules));
 
     map(rule, |(id, _, sub_rules)| T::Rule { id, sub_rules })(input)
 }
 
 // The format of an atom is `ID: "CONTENT"`
 fn atom(input: &str) -> IResult<&str, T> {
-    let mut string = nom::sequence::delimited(
+    let string = nom::sequence::delimited(
         char('"'),
         nom::bytes::complete::take_while(|c| c != '"'),
         char('"'),
     );
-    let mut atom = nom::sequence::tuple((id, tag(": "), string));
+    let atom = nom::sequence::tuple((id, tag(": "), string));
     map(atom, |(id, _, content)| T::Atom {
         id,
         content: content.to_string(),
@@ -138,6 +138,15 @@ pub fn run(filename: String) {
     let mut cache = HashMap::new();
     for &id in grammar.keys() {
         let language = productions_memo(&grammar, &mut cache, id);
-        println!("{}, {}", id, language.len());
+        // println!("{}, {}", id, language.len());
     }
+
+    let mut part1 = 0;
+    let language = cache.get(&0).unwrap();
+    for message in chunks[1].lines() {
+        if language.contains(message) {
+            part1 += 1
+        }
+    }
+    println!("{}", part1)
 }
