@@ -149,4 +149,9 @@ pub fn run(filename: String) {
         }
     }
     println!("{}", part1)
+
+    let rule8 = parse("8: 42 | 42 8").unwrap();
+    let rule11 = parse("11: 42 31 | 42 11 31").unwrap();
+    grammar.insert(8, rule8);
+    grammar.insert(11, rule11);
 }
