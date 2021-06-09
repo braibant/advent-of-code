@@ -15,7 +15,7 @@ use nom::{
 #[derive(Clone, Debug)]
 enum T {
     Rule { id: u64, sub_rules: Vec<Vec<u64>> },
-    Atom { id: u64, content: String },
+    Atom { id: u64, content: char },
 }
 
 // Numeric identifier
@@ -45,9 +45,13 @@ fn atom(input: &str) -> IResult<&str, T> {
         char('"'),
     );
     let atom = nom::sequence::tuple((id, tag(": "), string));
-    map(atom, |(id, _, content)| T::Atom {
-        id,
-        content: content.to_string(),
+    map(atom, |(id, _, content)| {
+        let content: Vec<char> = content.chars().collect();
+        assert_eq!(content.len(), 1);
+        T::Atom {
+            id,
+            content: content[0],
+        }
     })(input)
 }
 
@@ -106,7 +110,7 @@ fn productions_memo<'a>(
         None => match rules.get(&id).unwrap() {
             T::Atom { content, id: _ } => {
                 let mut s = HashSet::new();
-                s.insert(content.clone());
+                s.insert(format!("{}", content));
                 cache.insert(id, s.clone());
                 s
             }
@@ -148,10 +152,10 @@ pub fn run(filename: String) {
             part1 += 1
         }
     }
-    println!("{}", part1)
+    println!("{}", part1);
 
-    let rule8 = parse("8: 42 | 42 8").unwrap();
-    let rule11 = parse("11: 42 31 | 42 11 31").unwrap();
+    let (_, rule8) = parse("8: 42 | 42 8").unwrap();
+    let (_, rule11) = parse("11: 42 31 | 42 11 31").unwrap();
     grammar.insert(8, rule8);
     grammar.insert(11, rule11);
 }
