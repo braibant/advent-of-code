@@ -19,50 +19,52 @@ pub enum T {
     Atom { id: u64, content: char },
 }
 
-// Numeric identifier
-fn id(input: &str) -> IResult<&str, u64> {
-    map_res(digit1, |s: &str| s.parse::<u64>())(input)
+mod parsing {
+    use super::*;
+    // Numeric identifier
+    fn id(input: &str) -> IResult<&str, u64> {
+        map_res(digit1, |s: &str| s.parse::<u64>())(input)
+    }
+
+    // A space separated list of rules that must match.
+    fn sub_rule(input: &str) -> IResult<&str, Vec<u64>> {
+        nom::multi::separated_list1(nom::character::complete::space1, id)(input)
+    }
+
+    // The format of rule is `ID: SUB_RULE | ... | SUB_RULE`
+    fn rule(input: &str) -> IResult<&str, T> {
+        let sub_rules = nom::multi::separated_list1(tag(" | "), sub_rule);
+
+        let rule = nom::sequence::tuple((id, tag(": "), sub_rules));
+
+        map(rule, |(id, _, sub_rules)| T::Rule { id, sub_rules })(input)
+    }
+
+    // The format of an atom is `ID: "CONTENT"`
+    fn atom(input: &str) -> IResult<&str, T> {
+        let string = nom::sequence::delimited(
+            char('"'),
+            nom::bytes::complete::take_while(|c| c != '"'),
+            char('"'),
+        );
+        let atom = nom::sequence::tuple((id, tag(": "), string));
+        map(atom, |(id, _, content)| {
+            let content: Vec<char> = content.chars().collect();
+            assert_eq!(content.len(), 1);
+            T::Atom {
+                id,
+                content: content[0],
+            }
+        })(input)
+    }
+
+    pub fn parse(input: &str) -> IResult<&str, T> {
+        alt((atom, rule))(input)
+    }
 }
-
-// A space separated list of rules that must match.
-fn sub_rule(input: &str) -> IResult<&str, Vec<u64>> {
-    nom::multi::separated_list1(nom::character::complete::space1, id)(input)
-}
-
-// The format of rule is `ID: SUB_RULE | ... | SUB_RULE`
-fn rule(input: &str) -> IResult<&str, T> {
-    let sub_rules = nom::multi::separated_list1(tag(" | "), sub_rule);
-
-    let rule = nom::sequence::tuple((id, tag(": "), sub_rules));
-
-    map(rule, |(id, _, sub_rules)| T::Rule { id, sub_rules })(input)
-}
-
-// The format of an atom is `ID: "CONTENT"`
-fn atom(input: &str) -> IResult<&str, T> {
-    let string = nom::sequence::delimited(
-        char('"'),
-        nom::bytes::complete::take_while(|c| c != '"'),
-        char('"'),
-    );
-    let atom = nom::sequence::tuple((id, tag(": "), string));
-    map(atom, |(id, _, content)| {
-        let content: Vec<char> = content.chars().collect();
-        assert_eq!(content.len(), 1);
-        T::Atom {
-            id,
-            content: content[0],
-        }
-    })(input)
-}
-
-fn parse(input: &str) -> IResult<&str, T> {
-    alt((atom, rule))(input)
-}
-
 mod part1 {
     use super::*;
-    // For part1, the approach is the naive one: generate sets of strings from the language that is provided, then check for inclusion of the messages in the set of generated words. This approach is tractable, since the languages are finite. (This assumption fails in part2).
+    // For part1, the approach is the naive one: generate sets of strings from the language that is provided, then check for inclusion of the messages in this representation of the language. This approach is tractable, since the languages are finite. (This assumption fails in part2).
 
     fn concat(a: &HashSet<String>, b: &HashSet<String>) -> HashSet<String> {
         let mut acc = HashSet::new();
@@ -175,6 +177,8 @@ mod part2 {
         es.contains(&vec![])
     }
 }
+
+use parsing::parse;
 
 pub fn run(filename: String) {
     let contents = std::fs::read_to_string(filename).unwrap();
