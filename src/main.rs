@@ -1,3 +1,5 @@
+#![allow(unused_imports)]
+
 use std::env;
 
 #[macro_use]

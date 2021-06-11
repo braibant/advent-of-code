@@ -5,7 +5,7 @@ use nom::{
     branch::alt,
     bytes::complete::tag,
     character::complete::digit1,
-    combinator::{map, map_res, value},
+    combinator::{map, map_res},
     multi::many0,
     IResult,
 };
