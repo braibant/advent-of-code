@@ -8,40 +8,38 @@ use std::io::{BufRead, BufReader};
 
 // So, my guess here is that we should simply: count the number of occurences of each border, extract the corner pieces based on this, and return the product of their id (the puzzle answer).
 
-// The problem description uses the word "flipped", but I assume that we cannot actually flip the pieces vertically or horizontally.
-
 type Piece = (u64, Vec<bool>);
 
-const SIZE: usize = 10;
+const TILE_SIZE: usize = 10;
 
 const IMAGE_SIZE: usize = 96;
 
 lazy_static! {
     static ref U: Vec<usize> = {
         let mut v = Vec::new();
-        for i in 0..SIZE {
+        for i in 0..TILE_SIZE {
             v.push(i)
         }
         v
     };
     static ref L: Vec<usize> = {
         let mut v = Vec::new();
-        for i in 0..SIZE {
-            v.push(i * SIZE)
+        for i in 0..TILE_SIZE {
+            v.push(i * TILE_SIZE)
         }
         v
     };
     static ref R: Vec<usize> = {
         let mut v = Vec::new();
-        for i in 0..SIZE {
-            v.push(9 + i * SIZE)
+        for i in 0..TILE_SIZE {
+            v.push(9 + i * TILE_SIZE)
         }
         v
     };
     static ref D: Vec<usize> = {
         let mut v = Vec::new();
-        for i in 0..SIZE {
-            v.push(9 * SIZE + i)
+        for i in 0..TILE_SIZE {
+            v.push(9 * TILE_SIZE + i)
         }
         v
     };
@@ -59,14 +57,14 @@ fn extract_flip(piece: &Piece, positions: &Vec<usize>) -> Vec<bool> {
 }
 
 fn get(i: usize, j: usize, piece: &Vec<bool>) -> bool {
-    piece[i * SIZE + j]
+    piece[i * TILE_SIZE + j]
 }
 
 fn rotate(piece: &Piece) -> Piece {
     let mut p = vec![];
-    for i in 0..SIZE {
-        for j in 0..SIZE {
-            p.push(get(j, SIZE - i - 1, &piece.1))
+    for i in 0..TILE_SIZE {
+        for j in 0..TILE_SIZE {
+            p.push(get(j, TILE_SIZE - i - 1, &piece.1))
         }
     }
     return (piece.0, p);
@@ -74,9 +72,9 @@ fn rotate(piece: &Piece) -> Piece {
 
 fn hflip(piece: &Piece) -> Piece {
     let mut p = vec![];
-    for i in 0..SIZE {
-        for j in 0..SIZE {
-            p.push(get(i, SIZE - j - 1, &piece.1))
+    for i in 0..TILE_SIZE {
+        for j in 0..TILE_SIZE {
+            p.push(get(i, TILE_SIZE - j - 1, &piece.1))
         }
     }
     return (piece.0, p);
@@ -84,9 +82,9 @@ fn hflip(piece: &Piece) -> Piece {
 
 fn vflip(piece: &Piece) -> Piece {
     let mut p = vec![];
-    for i in 0..SIZE {
-        for j in 0..SIZE {
-            p.push(get(SIZE - i - 1, j, &piece.1))
+    for i in 0..TILE_SIZE {
+        for j in 0..TILE_SIZE {
+            p.push(get(TILE_SIZE - i - 1, j, &piece.1))
         }
     }
     return (piece.0, p);
@@ -236,25 +234,25 @@ fn find_and_orient_relevant_unused_piece(
 // Render a matrix of tiles as a matrix of booleans, having removed the tile borders
 
 fn extract_line(pieces: &Vec<Vec<Piece>>, i: usize) -> Vec<bool> {
-    let line = &pieces[i / SIZE];
+    let line = &pieces[i / TILE_SIZE];
 
     let mut acc = vec![];
     for tile in line.iter() {
-        for j in 0..SIZE {
-            acc.push(get(i % SIZE, j, &tile.1))
+        for j in 0..TILE_SIZE {
+            acc.push(get(i % TILE_SIZE, j, &tile.1))
         }
     }
     acc
 }
 
-// Remove the borders, i.e. indices which are 0 % SIZE or SIZE - 1 % SIZE.
+// Remove the borders, i.e. indices which are 0 % TILE_SIZE or TILE_SIZE - 1 % TILE_SIZE.
 fn remove_borders<T>(v: &Vec<T>) -> Vec<T>
 where
     T: Clone,
 {
     let mut acc = vec![];
     for (i, b) in v.iter().enumerate() {
-        if !(i % SIZE == 0 || i % SIZE == SIZE - 1) {
+        if !(i % TILE_SIZE == 0 || i % TILE_SIZE == TILE_SIZE - 1) {
             acc.push(b.clone())
         }
     }
@@ -264,7 +262,7 @@ where
 fn render(pieces: &Vec<Vec<Piece>>) -> Vec<Vec<bool>> {
     let number_of_tiles = pieces.len();
     let mut lines = vec![];
-    for i in 0..(number_of_tiles * SIZE - 1) {
+    for i in 0..(number_of_tiles * TILE_SIZE - 1) {
         let line = remove_borders(&extract_line(pieces, i));
         lines.push(line);
     }
