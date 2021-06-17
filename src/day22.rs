@@ -77,7 +77,7 @@ mod part2 {
         while player1_deck.len() != 0 && player2_deck.len() != 0 {
             let key = (player1_deck.clone(), player2_deck.clone());
             if previous_positions.contains(&key) {
-                return (Winner::Player1);
+                return Winner::Player1;
             } else {
                 previous_positions.insert(key);
             }

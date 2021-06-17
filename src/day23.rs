@@ -90,6 +90,7 @@ fn create(v: &Vec<T>) -> Permutation {
     Permutation { support, index }
 }
 
+#[allow(dead_code)]
 fn print(permutation: &Permutation, current: usize) {
     let mut ptr = 0;
     for _i in 0..permutation.len() {
@@ -124,7 +125,7 @@ fn part1(permutation: &Permutation) {
     let mut permutation = permutation.clone();
 
     let mut current = 0;
-    for i in 0..100 {
+    for _i in 0..100 {
         step(&mut permutation, current);
         let (next, _lcurrent) = permutation[current];
         current = next;
@@ -141,7 +142,7 @@ fn part2(permutation: &Permutation) {
     let mut permutation = permutation.clone();
 
     let mut current = 0;
-    for i in 0..10_000_000 {
+    for _i in 0..10_000_000 {
         step(&mut permutation, current);
         let (next, _lcurrent) = permutation[current];
         current = next;
@@ -152,7 +153,7 @@ fn part2(permutation: &Permutation) {
     println!("{}", labels.iter().product::<usize>());
 }
 
-pub fn run(_filename: String) {
+pub fn run() {
     let example_seed = vec![3, 8, 9, 1, 2, 5, 4, 6, 7];
     let permutation = create(&example_seed);
     part1(&permutation);

@@ -38,33 +38,106 @@ mod day25;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let filename = args[2].clone();
-    match args[1].as_str() {
-        "1" => day1::run(filename),
-        "2" => day2::run(filename),
-        "3" => day3::run(filename),
-        "4" => day4::run(filename),
-        "5" => day5::run(filename),
-        "6" => day6::run(filename),
-        "7" => day7::run(filename),
-        "8" => day8::run(filename),
-        "9" => day9::run(filename),
-        "10" => day10::run(filename),
-        "11" => day11::run(filename),
-        "12" => day12::run(filename),
-        "13" => day13::run(filename),
-        "14" => day14::run(filename),
-        "15" => day15::run(),
-        "16" => day16::run(filename),
-        "17" => day17::run(filename),
-        "18" => day18::run(filename),
-        "19" => day19::run(filename),
-        "20" => day20::run(filename),
-        "21" => day21::run(filename),
-        "22" => day22::run(filename),
-        "23" => day23::run(filename),
-        "24" => day24::run(filename),
-        "25" => day25::run(filename),
-        _ => panic!("Not yet implemented"),
+    if args.len() < 1 {
+        println!("Please specify a problem number: 1-25");
+        std::process::exit(1);
+    } else {
+        match args[1].as_str() {
+            "1" => {
+                let filename = args[2].clone();
+                day1::run(filename)
+            }
+            "2" => {
+                let filename = args[2].clone();
+                day2::run(filename)
+            }
+            "3" => {
+                let filename = args[2].clone();
+                day3::run(filename)
+            }
+            "4" => {
+                let filename = args[2].clone();
+                day4::run(filename)
+            }
+            "5" => {
+                let filename = args[2].clone();
+                day5::run(filename)
+            }
+            "6" => {
+                let filename = args[2].clone();
+                day6::run(filename)
+            }
+            "7" => {
+                let filename = args[2].clone();
+                day7::run(filename)
+            }
+            "8" => {
+                let filename = args[2].clone();
+                day8::run(filename)
+            }
+            "9" => {
+                let filename = args[2].clone();
+                day9::run(filename)
+            }
+            "10" => {
+                let filename = args[2].clone();
+                day10::run(filename)
+            }
+            "11" => {
+                let filename = args[2].clone();
+                day11::run(filename)
+            }
+            "12" => {
+                let filename = args[2].clone();
+                day12::run(filename)
+            }
+            "13" => {
+                let filename = args[2].clone();
+                day13::run(filename)
+            }
+            "14" => {
+                let filename = args[2].clone();
+                day14::run(filename)
+            }
+            "15" => day15::run(),
+            "16" => {
+                let filename = args[2].clone();
+                day16::run(filename)
+            }
+            "17" => {
+                let filename = args[2].clone();
+                day17::run(filename)
+            }
+            "18" => {
+                let filename = args[2].clone();
+                day18::run(filename)
+            }
+            "19" => {
+                let filename = args[2].clone();
+                day19::run(filename)
+            }
+            "20" => {
+                let filename = args[2].clone();
+                day20::run(filename)
+            }
+            "21" => {
+                let filename = args[2].clone();
+                day21::run(filename)
+            }
+            "22" => {
+                let filename = args[2].clone();
+                day22::run(filename)
+            }
+            "23" => day23::run(),
+            "24" => {
+                let filename = args[2].clone();
+                day24::run(filename)
+            }
+            "25" => {
+                let filename = args[2].clone();
+                day25::run(filename)
+            }
+            s => panic!("Invalid problem: {}", s),
+        }
     }
 }

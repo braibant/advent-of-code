@@ -101,7 +101,7 @@ pub fn run(filename: String) {
     let mut allergens = Vec::new();
 
     while candidates.len() > 0 {
-        candidates.sort_by_key(|(allergen, sources)| sources.len());
+        candidates.sort_by_key(|(_allergen, sources)| sources.len());
 
         let (allergen, mut sources) = candidates.remove(0);
         assert_eq!(sources.len(), 1);
@@ -109,7 +109,7 @@ pub fn run(filename: String) {
         let source = sources.drain().next().unwrap();
         allergens.push((allergen, source.clone()));
 
-        for (allergen, sources) in candidates.iter_mut() {
+        for (_allergen, sources) in candidates.iter_mut() {
             sources.remove(&source);
         }
     }
