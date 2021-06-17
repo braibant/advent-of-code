@@ -133,10 +133,7 @@ fn main() {
                 let filename = args[2].clone();
                 day24::run(filename)
             }
-            "25" => {
-                let filename = args[2].clone();
-                day25::run(filename)
-            }
+            "25" => day25::run(),
             s => panic!("Invalid problem: {}", s),
         }
     }
