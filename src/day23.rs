@@ -3,9 +3,35 @@ use std::fmt::Debug;
 use std::fs::File;
 use std::hash::Hash;
 use std::io::{BufRead, BufReader};
+use std::ops::{Index, IndexMut};
 
-// permutation
-type Permutation<T> = Vec<(usize, T)>;
+type T = usize;
+
+#[derive(Clone)]
+struct Permutation {
+    support: Vec<(usize, T)>,
+    index: HashMap<T, usize>,
+}
+
+impl Permutation {
+    fn len(&self) -> usize {
+        self.support.len()
+    }
+}
+
+impl Index<usize> for Permutation {
+    type Output = (usize, T);
+
+    fn index(&self, i: usize) -> &Self::Output {
+        &self.support[i]
+    }
+}
+
+impl IndexMut<usize> for Permutation {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        &mut self.support[index]
+    }
+}
 
 fn previous(i: usize, n: usize) -> usize {
     let p = (i - 1).rem_euclid(n);
@@ -16,7 +42,7 @@ fn previous(i: usize, n: usize) -> usize {
     }
 }
 
-fn step(permutation: &mut Permutation<usize>, index: &HashMap<usize, usize>, current: usize) {
+fn step(permutation: &mut Vec<(usize, T)>, index: &HashMap<T, usize>, current: usize) {
     let len = permutation.len();
 
     // before:
@@ -52,12 +78,7 @@ fn step(permutation: &mut Permutation<usize>, index: &HashMap<usize, usize>, cur
     permutation[c] = (x, lc);
 }
 
-fn create<T>(v: &Vec<T>) -> (Permutation<T>, HashMap<T, usize>)
-where
-    T: Copy,
-    T: Eq,
-    T: Hash,
-{
+fn create(v: &Vec<T>) -> Permutation {
     let mut index = HashMap::new();
     let mut support = vec![];
     let len = v.len();
@@ -66,14 +87,10 @@ where
         support.push((next, label));
         index.insert(label, idx);
     }
-    (support, index)
+    Permutation { support, index }
 }
 
-fn print<T>(permutation: &Permutation<T>, current: usize)
-where
-    T: Debug,
-    T: Copy,
-{
+fn print(permutation: &Permutation, current: usize) {
     let mut ptr = 0;
     for _i in 0..permutation.len() {
         let (next, label) = permutation[ptr];
@@ -87,13 +104,8 @@ where
     println!("")
 }
 
-fn labels<T>(permutation: &Permutation<T>, index: &HashMap<T, usize>, x: T, n: usize) -> Vec<T>
-where
-    T: Eq,
-    T: Copy,
-    T: Hash,
-{
-    let mut ptr: usize = *index.get(&x).unwrap();
+fn labels(permutation: &Permutation, x: T, n: usize) -> Vec<T> {
+    let mut ptr: usize = *permutation.index.get(&x).unwrap();
 
     // skip 1
     ptr = permutation[ptr].0;
@@ -108,24 +120,24 @@ where
     return acc;
 }
 
-fn part1(permutation: &Permutation<usize>, index: &HashMap<usize, usize>) {
+fn part1(permutation: &Permutation) {
     let mut permutation = permutation.clone();
 
     let mut current = 0;
     for i in 0..100 {
-        step(&mut permutation, index, current);
+        step(&mut permutation.support, &permutation.index, current);
         let (next, _lcurrent) = permutation[current];
         current = next;
     }
 
-    let labels: Vec<_> = labels(&permutation, index, 1, permutation.len() - 1)
+    let labels: Vec<_> = labels(&permutation, 1, permutation.len() - 1)
         .iter()
         .map(|n| n.to_string())
         .collect();
     println!("{}", labels.join(""))
 }
 
-fn part2(permutation: &Permutation<usize>, index: &HashMap<usize, usize>) {
+fn part2(permutation: &Permutation) {
     let mut permutation = permutation.clone();
 
     let mut current = 0;
@@ -133,29 +145,29 @@ fn part2(permutation: &Permutation<usize>, index: &HashMap<usize, usize>) {
         if i % 100_000 == 0 {
             println!("{}", i)
         }
-        step(&mut permutation, index, current);
+        step(&mut permutation.support, &permutation.index, current);
         let (next, _lcurrent) = permutation[current];
         current = next;
     }
 
-    let labels: Vec<usize> = labels(&permutation, index, 1, 2);
+    let labels: Vec<usize> = labels(&permutation, 1, 2);
     println!("{:?}", labels)
 }
 
 pub fn run(_filename: String) {
     let example_seed = vec![3, 8, 9, 1, 2, 5, 4, 6, 7];
-    let (permutation, index) = create(&example_seed);
-    part1(&permutation, &index);
+    let permutation = create(&example_seed);
+    part1(&permutation);
 
     let my_seed = vec![2, 5, 3, 1, 4, 9, 8, 6, 7];
-    let (permutation, index) = create(&my_seed);
-    part1(&permutation, &index);
+    let permutation = create(&my_seed);
+    part1(&permutation);
 
     let mut input = my_seed.clone();
     for i in my_seed.len()..1000000 {
         input.push(i + 1);
     }
-    let (permutation, index) = create(&input);
+    let permutation = create(&input);
 
-    part2(&permutation, &index)
+    part2(&permutation)
 }
