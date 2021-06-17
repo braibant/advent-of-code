@@ -42,7 +42,7 @@ fn previous(i: usize, n: usize) -> usize {
     }
 }
 
-fn step(permutation: &mut Vec<(usize, T)>, index: &HashMap<T, usize>, current: usize) {
+fn step(permutation: &mut Permutation, current: usize) {
     let len = permutation.len();
 
     // before:
@@ -67,7 +67,7 @@ fn step(permutation: &mut Vec<(usize, T)>, index: &HashMap<T, usize>, current: u
     }
 
     // find the position of the destination
-    let destination = *index.get(&ldest).unwrap();
+    let destination = *permutation.index.get(&ldest).unwrap();
 
     // println!("destination: {}", ldest);
 
@@ -125,7 +125,7 @@ fn part1(permutation: &Permutation) {
 
     let mut current = 0;
     for i in 0..100 {
-        step(&mut permutation.support, &permutation.index, current);
+        step(&mut permutation, current);
         let (next, _lcurrent) = permutation[current];
         current = next;
     }
@@ -142,16 +142,14 @@ fn part2(permutation: &Permutation) {
 
     let mut current = 0;
     for i in 0..10_000_000 {
-        if i % 100_000 == 0 {
-            println!("{}", i)
-        }
-        step(&mut permutation.support, &permutation.index, current);
+        step(&mut permutation, current);
         let (next, _lcurrent) = permutation[current];
         current = next;
     }
 
     let labels: Vec<usize> = labels(&permutation, 1, 2);
-    println!("{:?}", labels)
+    println!("{:?}", labels);
+    println!("{}", labels.iter().product::<usize>());
 }
 
 pub fn run(_filename: String) {
