@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::collections::HashSet;
 use std::ops::Add;
 
@@ -35,13 +36,6 @@ fn dir(dir: Dir) -> Vector2d {
     }
 }
 
-fn scale(n: i64, v: Vector2d) -> Vector2d {
-    Vector2d {
-        x: n * v.x,
-        y: n * v.y,
-    }
-}
-
 fn distance(v: &Vector2d) -> i64 {
     v.x.abs() + v.y.abs()
 }
@@ -58,66 +52,30 @@ fn parse(s: &str) -> (Dir, i64) {
     }
 }
 
-mod part1 {
-    // Test if [b] belongs to the segment denoted by a starting point [a], a direction and a length
-    fn mem(a: &Vector2d, dir: Dir, n: i64, b: &Vector2d) -> bool {
-        let Vector2d { x: xa, y: ya } = *a;
-        let Vector2d { x: xb, y: yb } = *b;
+fn build(wire: Vec<(Dir, i64)>) -> HashMap<Vector2d, i64> {
+    let mut acc = HashMap::new();
+    let mut pt = Vector2d { x: 0, y: 0 };
+    let mut step = 0;
 
-        match dir {
-            Dir::U => xa == xb && ya <= yb && yb <= ya + n,
-            Dir::D => xa == xb && ya - n <= yb && yb <= ya,
-            Dir::L => ya == yb && xa - n <= yb && xb <= xa,
-            Dir::R => ya == yb && xa <= xb && xb <= xa + n,
-        }
-    }
-
-    fn add_intersections(
-        acc: &mut HashSet<Vector2d>,
-        start_a: &Vector2d,
-        dir_a: Dir,
-        length_a: i64,
-        start_b: &Vector2d,
-        dir_b: Dir,
-        length_b: i64,
-    ) {
-        let mut pt = start_b.clone();
-        for i in 0..length_b + 1 {
-            if mem(start_a, dir_a, length_a, &pt) {
-                acc.insert(pt.clone());
+    for (d, length) in wire.iter() {
+        let dir = dir(*d);
+        for _ in 0..*length {
+            if !acc.contains_key(&pt) {
+                acc.insert(pt, step);
             };
-            pt = pt + dir(dir_b);
+            pt = pt + dir;
+            step += 1;
         }
     }
-
-    fn build_path(wire: Vec<(Dir, i64)>) -> Vec<(Vector2d, Dir, i64)> {
-        let mut acc = Vec::new();
-        let mut pt = Vector2d { x: 0, y: 0 };
-        for &(d, length) in wire.iter() {
-            acc.push((pt.clone(), d, length));
-            pt = pt + scale(length, dir(d))
-        }
-        acc
-    }
-
-    type Path = Vec<(Vector2d, Dir, i64)>;
-
-    fn intersections(p1: &Path, p2: &Path) -> HashSet<Vector2d> {
-        let mut acc = HashSet::new();
-        let mut pt = Vector2d { x: 0, y: 0 };
-
-        for &(start_a, dir_a, length_a) in p1.iter() {
-            for &(start_b, dir_b, length_b) in p2.iter() {
-                add_intersections(
-                    &mut acc, &start_a, dir_a, length_a, &start_b, dir_b, length_b,
-                )
-            }
-        }
-        acc
-    }
+    acc
 }
 
-use part1::*;
+fn intersections(p1: &HashMap<Vector2d, i64>, p2: &HashMap<Vector2d, i64>) -> HashSet<Vector2d> {
+    let s1: HashSet<_> = p1.keys().cloned().collect();
+    let s2: HashSet<_> = p2.keys().cloned().collect();
+    s1.intersection(&s2).cloned().collect()
+}
+
 pub fn run(filename: String) {
     let contents = std::fs::read_to_string(filename).unwrap();
 
@@ -126,11 +84,13 @@ pub fn run(filename: String) {
     let wire1: Vec<_> = wires[0].split(",").map(parse).collect();
     let wire2: Vec<_> = wires[1].split(",").map(parse).collect();
 
-    let path1 = build_path(wire1);
-    let path2 = build_path(wire2);
-
+    let path1 = build(wire1);
+    let path2 = build(wire2);
     let mut s = intersections(&path1, &path2);
     s.remove(&Vector2d { x: 0, y: 0 });
     let result = s.iter().min_by_key(|v| distance(v));
-    println!("{:?}", result)
+    println!("{:?}", result);
+
+    let pt = s.iter().min_by_key(|pt| path1[pt] + path2[pt]).unwrap();
+    println!("{:?}", path1[pt] + path2[pt]);
 }
