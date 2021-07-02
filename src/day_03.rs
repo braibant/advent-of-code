@@ -58,63 +58,66 @@ fn parse(s: &str) -> (Dir, i64) {
     }
 }
 
-// Test if [b] belongs to the segment denoted by a starting point [a], a direction and a length
-fn mem(a: &Vector2d, dir: Dir, n: i64, b: &Vector2d) -> bool {
-    let Vector2d { x: xa, y: ya } = *a;
-    let Vector2d { x: xb, y: yb } = *b;
+mod part1 {
+    // Test if [b] belongs to the segment denoted by a starting point [a], a direction and a length
+    fn mem(a: &Vector2d, dir: Dir, n: i64, b: &Vector2d) -> bool {
+        let Vector2d { x: xa, y: ya } = *a;
+        let Vector2d { x: xb, y: yb } = *b;
 
-    match dir {
-        Dir::U => xa == xb && ya <= yb && yb <= ya + n,
-        Dir::D => xa == xb && ya - n <= yb && yb <= ya,
-        Dir::L => ya == yb && xa - n <= yb && xb <= xa,
-        Dir::R => ya == yb && xa <= xb && xb <= xa + n,
-    }
-}
-
-fn add_intersections(
-    acc: &mut HashSet<Vector2d>,
-    start_a: &Vector2d,
-    dir_a: Dir,
-    length_a: i64,
-    start_b: &Vector2d,
-    dir_b: Dir,
-    length_b: i64,
-) {
-    let mut pt = start_b.clone();
-    for i in 0..length_b + 1 {
-        if mem(start_a, dir_a, length_a, &pt) {
-            acc.insert(pt.clone());
-        };
-        pt = pt + dir(dir_b);
-    }
-}
-
-fn build_path(wire: Vec<(Dir, i64)>) -> Vec<(Vector2d, Dir, i64)> {
-    let mut acc = Vec::new();
-    let mut pt = Vector2d { x: 0, y: 0 };
-    for &(d, length) in wire.iter() {
-        acc.push((pt.clone(), d, length));
-        pt = pt + scale(length, dir(d))
-    }
-    acc
-}
-
-type Path = Vec<(Vector2d, Dir, i64)>;
-
-fn intersections(p1: &Path, p2: &Path) -> HashSet<Vector2d> {
-    let mut acc = HashSet::new();
-    let mut pt = Vector2d { x: 0, y: 0 };
-
-    for &(start_a, dir_a, length_a) in p1.iter() {
-        for &(start_b, dir_b, length_b) in p2.iter() {
-            add_intersections(
-                &mut acc, &start_a, dir_a, length_a, &start_b, dir_b, length_b,
-            )
+        match dir {
+            Dir::U => xa == xb && ya <= yb && yb <= ya + n,
+            Dir::D => xa == xb && ya - n <= yb && yb <= ya,
+            Dir::L => ya == yb && xa - n <= yb && xb <= xa,
+            Dir::R => ya == yb && xa <= xb && xb <= xa + n,
         }
     }
-    acc
+
+    fn add_intersections(
+        acc: &mut HashSet<Vector2d>,
+        start_a: &Vector2d,
+        dir_a: Dir,
+        length_a: i64,
+        start_b: &Vector2d,
+        dir_b: Dir,
+        length_b: i64,
+    ) {
+        let mut pt = start_b.clone();
+        for i in 0..length_b + 1 {
+            if mem(start_a, dir_a, length_a, &pt) {
+                acc.insert(pt.clone());
+            };
+            pt = pt + dir(dir_b);
+        }
+    }
+
+    fn build_path(wire: Vec<(Dir, i64)>) -> Vec<(Vector2d, Dir, i64)> {
+        let mut acc = Vec::new();
+        let mut pt = Vector2d { x: 0, y: 0 };
+        for &(d, length) in wire.iter() {
+            acc.push((pt.clone(), d, length));
+            pt = pt + scale(length, dir(d))
+        }
+        acc
+    }
+
+    type Path = Vec<(Vector2d, Dir, i64)>;
+
+    fn intersections(p1: &Path, p2: &Path) -> HashSet<Vector2d> {
+        let mut acc = HashSet::new();
+        let mut pt = Vector2d { x: 0, y: 0 };
+
+        for &(start_a, dir_a, length_a) in p1.iter() {
+            for &(start_b, dir_b, length_b) in p2.iter() {
+                add_intersections(
+                    &mut acc, &start_a, dir_a, length_a, &start_b, dir_b, length_b,
+                )
+            }
+        }
+        acc
+    }
 }
 
+use part1::*;
 pub fn run(filename: String) {
     let contents = std::fs::read_to_string(filename).unwrap();
 
