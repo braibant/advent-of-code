@@ -52,6 +52,7 @@ fn parse(s: &str) -> (Dir, i64) {
     }
 }
 
+// This allocates memory linearly with respect to the distance travelled, which would be an issue if the problem input was simply scaled to use higher numerical constants. This is not an issue here, and allows for a simple solution. An "optimisation" would be to avoid building the path for the second wire, and simply record the set of intersections as we build it (this would cut memory usage in two, roughly). An actual optimisation would be to build the list of segments (as was initially done for part 1, with memory usage linear in the number of wire segments), compute intersections, then compute the number of steps used to reach each such intersection.
 fn build(wire: Vec<(Dir, i64)>) -> HashMap<Vector2d, i64> {
     let mut acc = HashMap::new();
     let mut pt = Vector2d { x: 0, y: 0 };
