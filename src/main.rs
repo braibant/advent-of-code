@@ -8,11 +8,12 @@ mod day_04;
 mod day_05;
 mod day_06;
 mod day_07;
+mod day_08;
 mod intcode;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    if args.len() < 1 {
+    if args.len() < 2 {
         println!("Please specify a problem number: 1-25");
         std::process::exit(1);
     } else {
@@ -24,6 +25,7 @@ fn main() {
             "5" => day_05::run(args[2].clone()),
             "6" => day_06::run(args[2].clone()),
             "7" => day_07::run(args[2].clone()),
+            "8" => day_08::run(args[2].clone()),
             s => {
                 println!("Unknown command: {}", s);
                 std::process::exit(1)
