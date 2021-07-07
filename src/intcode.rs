@@ -161,6 +161,15 @@ pub fn execute(program: &mut Vec<i64>, input: &mut Vec<i64>) -> Vec<i64> {
     output
 }
 
+pub fn read_intcode_program(filename: &str) -> Vec<i64> {
+    let contents = std::fs::read_to_string(filename).unwrap();
+    let program: Vec<_> = contents
+        .split(",")
+        .map(|s| s.parse::<i64>().unwrap())
+        .collect();
+    program
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

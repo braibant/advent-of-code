@@ -1,12 +1,7 @@
 use super::intcode::*;
 
 pub fn run(filename: String) {
-    let contents = std::fs::read_to_string(filename).unwrap();
-
-    let program: Vec<_> = contents
-        .split(",")
-        .map(|s| s.parse::<i64>().unwrap())
-        .collect();
+    let program = read_intcode_program(&filename);
 
     // part 1
     let output = execute(&mut program.clone(), &mut vec![1]);
