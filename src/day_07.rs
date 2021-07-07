@@ -25,46 +25,32 @@ fn compute_output_signal(program: &Vec<i64>, phase_settings: &Vec<i64>) -> i64 {
 }
 
 fn compute_output_signal_with_feedback(program: &Vec<i64>, phase_settings: &Vec<i64>) -> i64 {
-    let mut amp_a = intcode::T::new(program);
-    let mut amp_b = intcode::T::new(program);
-    let mut amp_c = intcode::T::new(program);
-    let mut amp_d = intcode::T::new(program);
-    let mut amp_e = intcode::T::new(program);
-
-    amp_a.push(phase_settings[0]);
-    amp_b.push(phase_settings[1]);
-    amp_c.push(phase_settings[2]);
-    amp_d.push(phase_settings[3]);
-    amp_e.push(phase_settings[4]);
-
-    amp_a.push(0);
-
-    let mut amp_e_values = vec![];
-    while !amp_a.is_halted()
-        || !amp_b.is_halted()
-        || !amp_c.is_halted()
-        || !amp_d.is_halted()
-        || !amp_e.is_halted()
-    {
-        if let Some(a) = amp_a.pop() {
-            amp_b.push(a)
-        };
-        if let Some(b) = amp_b.pop() {
-            amp_c.push(b)
-        };
-        if let Some(c) = amp_c.pop() {
-            amp_d.push(c)
-        };
-        if let Some(d) = amp_d.pop() {
-            amp_e.push(d)
-        };
-        if let Some(e) = amp_e.pop() {
-            amp_a.push(e);
-            amp_e_values.push(e);
-        };
+    let mut amps = vec![
+        intcode::T::new(program),
+        intcode::T::new(program),
+        intcode::T::new(program),
+        intcode::T::new(program),
+        intcode::T::new(program),
+    ];
+    for i in 0..5 {
+        amps[i].push(phase_settings[i])
     }
 
-    while let Some(e) = amp_e.pop() {
+    amps[0].push(0);
+
+    let mut amp_e_values = vec![];
+    while !amps.iter_mut().all(|amp| amp.is_halted()) {
+        for i in 0..5 {
+            if let Some(x) = amps[i].pop() {
+                amps[(i + 1) % 5].push(x);
+                if i == 4 {
+                    amp_e_values.push(x)
+                }
+            }
+        }
+    }
+
+    while let Some(e) = amps[4].pop() {
         amp_e_values.push(e)
     }
 
