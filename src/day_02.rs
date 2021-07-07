@@ -1,25 +1,23 @@
-use super::intcode::*;
+use super::intcode;
 
 pub fn run(filename: String) {
-    let program = read_intcode_program(&filename);
+    let program = intcode::read_intcode_program(&filename);
     // part 1
-    let mut p1 = program.clone();
-    p1[1] = 12;
-    p1[2] = 2;
-    let mut input = vec![];
 
-    execute(&mut p1, &mut input);
-    println!("{}", p1[0]);
+    let mut vm = intcode::T::new(&program);
+    vm.program[1] = 12;
+    vm.program[2] = 2;
+    intcode::execute(&mut vm);
+    println!("{}", vm.program[0]);
 
     // part 2
     for noun in 0..100 {
         for verb in 0..100 {
-            let mut p2 = program.clone();
-            p2[1] = noun;
-            p2[2] = verb;
-
-            execute(&mut p2, &mut input);
-            if p2[0] == 19690720 {
+            let mut vm = intcode::T::new(&program);
+            vm.program[1] = noun;
+            vm.program[2] = verb;
+            intcode::execute(&mut vm);
+            if vm.program[0] == 19690720 {
                 println!("{}", 100 * noun + verb)
             }
         }
@@ -32,25 +30,25 @@ mod tests {
     use super::*;
     #[test]
     fn test_1() {
-        let mut p = vec![1, 0, 0, 0, 99];
-        let mut input = vec![];
-        execute(&mut p, &mut input);
-        assert_eq!(p, vec![2, 0, 0, 0, 99])
+        let p = vec![1, 0, 0, 0, 99];
+        let mut vm = intcode::T::new(&p);
+        intcode::execute(&mut vm);
+        assert_eq!(vm.program, vec![2, 0, 0, 0, 99])
     }
 
     #[test]
     fn test_2() {
         let mut p = vec![2, 3, 0, 3, 99];
-        let mut input = vec![];
-        execute(&mut p, &mut input);
-        assert_eq!(p, vec![2, 3, 0, 6, 99])
+        let mut vm = intcode::T::new(&p);
+        intcode::execute(&mut vm);
+        assert_eq!(vm.program, vec![2, 3, 0, 6, 99])
     }
 
     #[test]
     fn test_3() {
         let mut p = vec![2, 4, 4, 5, 99, 0];
-        let mut input = vec![];
-        execute(&mut p, &mut input);
-        assert_eq!(p, vec![2, 4, 4, 5, 99, 9801])
+        let mut vm = intcode::T::new(&p);
+        intcode::execute(&mut vm);
+        assert_eq!(vm.program, vec![2, 4, 4, 5, 99, 9801])
     }
 }

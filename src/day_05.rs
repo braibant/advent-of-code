@@ -1,17 +1,21 @@
-use super::intcode::*;
+use super::intcode;
 
 pub fn run(filename: String) {
-    let program = read_intcode_program(&filename);
+    let program = intcode::read_intcode_program(&filename);
 
     // part 1
-    let output = execute(&mut program.clone(), &mut vec![1]);
-    for o in output.iter() {
+    let mut vm = intcode::T::new(&program);
+    vm.push(1);
+    intcode::execute(&mut vm);
+    for o in vm.output.iter() {
         println!("OUTPUT: {}", o)
     }
 
     // part 2
-    let output = execute(&mut program.clone(), &mut vec![5]);
-    for o in output.iter() {
+    let mut vm = intcode::T::new(&program);
+    vm.push(5);
+    intcode::execute(&mut vm);
+    for o in vm.output.iter() {
         println!("OUTPUT: {}", o)
     }
 }

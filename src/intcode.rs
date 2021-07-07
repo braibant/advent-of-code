@@ -54,16 +54,20 @@ fn value(program: &Vec<i64>, instruction: &Instruction, pc: usize, i: usize) -> 
     }
 }
 
-struct T {
-    program: Vec<i64>,
-    input: Vec<i64>,
-    output: Vec<i64>,
+pub enum Status {
+    // Intcode interpreter is halted
+    Halt,
+    // Intcode interpreter is waiting for input, and should resume from instruction pointer once input is available.
+    Blocked(usize),
+    // Continue execution from instruction pointer
+    Continue(usize),
 }
 
-enum Next {
-    Halt,
-    IncrInstructionPointer,
-    JumpTo(usize),
+pub struct T {
+    pub program: Vec<i64>,
+    pub input: Vec<i64>,
+    pub output: Vec<i64>,
+    pub status: Status,
 }
 
 pub fn step(
@@ -71,11 +75,11 @@ pub fn step(
     pc: usize,
     input: &mut Vec<i64>,
     output: &mut Vec<i64>,
-) -> Option<usize> {
+) -> Status {
     let instruction = decode(program[pc]);
-    let next = {
+    let next: Option<Status> = {
         if instruction.opcode == 99 {
-            Next::Halt
+            Some(Status::Halt)
         } else if instruction.opcode == 1 || instruction.opcode == 2 {
             let a = value(program, &instruction, pc, 1);
             let b = value(program, &instruction, pc, 2);
@@ -86,34 +90,39 @@ pub fn step(
             } else {
                 program[dest] = a * b;
             };
-            Next::IncrInstructionPointer
+            None
         } else if instruction.opcode == 3 {
             // input
             let dest = program[pc + 1] as usize;
-            program[dest] = input.pop().unwrap();
-            Next::IncrInstructionPointer
+            if input.len() > 0 {
+                let arg = input.remove(0);
+                program[dest] = arg;
+                None
+            } else {
+                Some(Status::Blocked(pc))
+            }
         } else if instruction.opcode == 4 {
             // output
             let v = value(program, &instruction, pc, 1);
             output.push(v);
-            Next::IncrInstructionPointer
+            None
         } else if instruction.opcode == 5 {
             // jump if true
             let a = value(program, &instruction, pc, 1);
             let b = value(program, &instruction, pc, 2);
             if a != 0 {
-                Next::JumpTo(b as usize)
+                Some(Status::Continue(b as usize))
             } else {
-                Next::IncrInstructionPointer
+                None
             }
         } else if instruction.opcode == 6 {
             // jump if false
             let a = value(program, &instruction, pc, 1);
             let b = value(program, &instruction, pc, 2);
             if a == 0 {
-                Next::JumpTo(b as usize)
+                Some(Status::Continue(b as usize))
             } else {
-                Next::IncrInstructionPointer
+                None
             }
         } else if instruction.opcode == 7 {
             // less than
@@ -126,10 +135,9 @@ pub fn step(
             } else {
                 program[dest] = 0
             };
-            Next::IncrInstructionPointer
+            None
         } else if instruction.opcode == 8 {
             // equals
-            // less than
             let a = value(program, &instruction, pc, 1);
             let b = value(program, &instruction, pc, 2);
             let dest = program[pc + 3] as usize;
@@ -139,35 +147,80 @@ pub fn step(
             } else {
                 program[dest] = 0
             };
-            Next::IncrInstructionPointer
+            None
         } else {
             panic!("Something went wrong {:?}", instruction)
         }
     };
 
     match next {
-        Next::Halt => None,
-        Next::IncrInstructionPointer => Some(pc + 1 + parameters(instruction.opcode)),
-        Next::JumpTo(addr) => Some(addr),
+        None => Status::Continue(pc + 1 + parameters(instruction.opcode)),
+        Some(status) => status,
     }
 }
 
-pub fn execute(program: &mut Vec<i64>, input: &mut Vec<i64>) -> Vec<i64> {
-    let mut pc = 0;
-    let mut output = vec![];
-    while let Some(next) = step(program, pc, input, &mut output) {
-        pc = next
+// Execute the program until it is blocked or halted.
+pub fn execute(vm: &mut T) {
+    loop {
+        match vm.status {
+            Status::Halt => break,
+            Status::Blocked(pc) => {
+                if vm.input.len() > 0 {
+                    vm.status = Status::Continue(pc)
+                } else {
+                    break;
+                }
+            }
+            Status::Continue(pc) => {
+                vm.status = step(&mut vm.program, pc, &mut vm.input, &mut vm.output)
+            }
+        }
     }
-    output
 }
 
-pub fn read_intcode_program(filename: &str) -> Vec<i64> {
-    let contents = std::fs::read_to_string(filename).unwrap();
-    let program: Vec<_> = contents
+impl T {
+    pub fn new(program: &Vec<i64>) -> T {
+        T {
+            program: program.clone(),
+            input: vec![],
+            output: vec![],
+            status: Status::Continue(0),
+        }
+    }
+
+    pub fn push(&mut self, i: i64) {
+        self.input.push(i)
+    }
+
+    pub fn pop(&mut self) -> Option<i64> {
+        execute(self);
+        if self.output.len() > 0 {
+            Some(self.output.remove(0))
+        } else {
+            None
+        }
+    }
+
+    pub fn is_halted(&mut self) -> bool {
+        execute(self);
+        match self.status {
+            Status::Halt => true,
+            _ => false,
+        }
+    }
+}
+
+pub fn from_string(program: &str) -> Vec<i64> {
+    let program: Vec<_> = program
         .split(",")
         .map(|s| s.parse::<i64>().unwrap())
         .collect();
     program
+}
+
+pub fn read_intcode_program(filename: &str) -> Vec<i64> {
+    let contents = std::fs::read_to_string(filename).unwrap();
+    from_string(&contents)
 }
 
 #[cfg(test)]
