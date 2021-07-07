@@ -40,7 +40,6 @@ mod tests {
     fn test_1() {
         let mut p = vec![1, 0, 0, 0, 99];
         let mut input = vec![];
-        let mut output = vec![];
         execute(&mut p, &mut input);
         assert_eq!(p, vec![2, 0, 0, 0, 99])
     }
@@ -49,7 +48,6 @@ mod tests {
     fn test_2() {
         let mut p = vec![2, 3, 0, 3, 99];
         let mut input = vec![];
-        let mut output = vec![];
         execute(&mut p, &mut input);
         assert_eq!(p, vec![2, 3, 0, 6, 99])
     }
@@ -58,7 +56,6 @@ mod tests {
     fn test_3() {
         let mut p = vec![2, 4, 4, 5, 99, 0];
         let mut input = vec![];
-        let mut output = vec![];
         execute(&mut p, &mut input);
         assert_eq!(p, vec![2, 4, 4, 5, 99, 9801])
     }
