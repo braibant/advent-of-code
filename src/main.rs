@@ -9,6 +9,7 @@ mod day_05;
 mod day_06;
 mod day_07;
 mod day_08;
+mod day_09;
 mod intcode;
 
 fn main() {
@@ -26,6 +27,7 @@ fn main() {
             "6" => day_06::run(args[2].clone()),
             "7" => day_07::run(args[2].clone()),
             "8" => day_08::run(args[2].clone()),
+            "9" => day_09::run(args[2].clone()),
             s => {
                 println!("Unknown command: {}", s);
                 std::process::exit(1)
