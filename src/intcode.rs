@@ -82,6 +82,8 @@ pub struct T {
     relative_base: i64,
 }
 
+pub type Program = Vec<i64>;
+
 impl T {
     pub fn new(program: &Vec<i64>) -> T {
         T {
