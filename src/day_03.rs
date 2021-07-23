@@ -61,9 +61,7 @@ fn build(wire: Vec<(Dir, i64)>) -> HashMap<Vector2d, i64> {
     for (d, length) in wire.iter() {
         let dir = dir(*d);
         for _ in 0..*length {
-            if !acc.contains_key(&pt) {
-                acc.insert(pt, step);
-            };
+            acc.entry(pt).or_insert(step);
             pt = pt + dir;
             step += 1;
         }
@@ -80,10 +78,10 @@ fn intersections(p1: &HashMap<Vector2d, i64>, p2: &HashMap<Vector2d, i64>) -> Ha
 pub fn run(filename: String) {
     let contents = std::fs::read_to_string(filename).unwrap();
 
-    let wires: Vec<_> = contents.split("\n").collect();
+    let wires: Vec<_> = contents.split('\n').collect();
 
-    let wire1: Vec<_> = wires[0].split(",").map(parse).collect();
-    let wire2: Vec<_> = wires[1].split(",").map(parse).collect();
+    let wire1: Vec<_> = wires[0].split(',').map(parse).collect();
+    let wire2: Vec<_> = wires[1].split(',').map(parse).collect();
 
     let path1 = build(wire1);
     let path2 = build(wire2);

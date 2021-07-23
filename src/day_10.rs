@@ -5,14 +5,12 @@ struct Point {
 }
 
 fn parse(contents: &str) -> (Vec<Point>, Option<Point>) {
-    let lines: Vec<&str> = contents.split("\n").collect();
+    let lines: Vec<&str> = contents.split('\n').collect();
 
     let mut acc = vec![];
     let mut center = None;
-    let mut x = 0;
-    let mut y = 0;
-    for line in lines.iter() {
-        x = 0;
+    for (y, line) in lines.iter().enumerate() {
+        let mut x = 0;
         for char in line.chars() {
             match char {
                 '#' => {
@@ -34,7 +32,6 @@ fn parse(contents: &str) -> (Vec<Point>, Option<Point>) {
                 _ => panic!("unexpected {}", char),
             }
         }
-        y += 1;
     }
     (acc, center)
 }
@@ -56,6 +53,7 @@ fn is_on_ray(a: &Point, b: &Point, c: &Point) -> bool {
 }
 
 // Is `c` between `a` and `b`
+#[allow(dead_code)]
 fn is_between(a: &Point, b: &Point, c: &Point) -> bool {
     if !aligned(a, b, c) {
         return false;
@@ -63,16 +61,16 @@ fn is_between(a: &Point, b: &Point, c: &Point) -> bool {
     let dot_product = (c.x - a.x) * (b.x - a.x) + (c.y - a.y) * (b.y - a.y);
     let squared_length = (b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y);
 
-    return (0 <= dot_product && dot_product <= squared_length);
+    0 <= dot_product && dot_product <= squared_length
 }
 
 // There is a trivial O(n^3) algorithm : For each potential location, consider all asteroids and check if their line of sight is blocked by a third-party asteroid.
 // We can refine this algorithm by considering that, we are simply counting the distinct "rays" as defined by a station location and a candidate asteroid.
-fn number_of_asteroids_in_sight(asteroids: &Vec<Point>, location: &Point) -> usize {
-    let mut candidates = asteroids.clone();
+fn number_of_asteroids_in_sight(asteroids: &[Point], location: &Point) -> usize {
+    let mut candidates = asteroids.to_owned();
 
     let mut count = 0;
-    while candidates.len() != 0 {
+    while !candidates.is_empty() {
         let candidate = candidates.pop().unwrap();
         if candidate == *location {
         } else {
@@ -113,12 +111,12 @@ fn distance(center: &Point, asteroid: &Point) -> f64 {
     })
 }
 
-fn part2(asteroids: &Vec<Point>, center: &Point, nth: usize) -> Point {
+fn part2(asteroids: &[Point], center: &Point, nth: usize) -> Point {
     let mut asteroids: Vec<_> = asteroids
         .iter()
         .map(|asteroid| {
             (
-                asteroid.clone(),
+                *asteroid,
                 angle(&center, &asteroid),
                 distance(&center, &asteroid),
             )
@@ -131,6 +129,7 @@ fn part2(asteroids: &Vec<Point>, center: &Point, nth: usize) -> Point {
         i += 1;
         let (mut a, theta, mut da) = asteroids.remove(0);
 
+        #[allow(clippy::float_cmp)]
         // Filter asteroids with same angle, and pick the one with min distance
         while asteroids[0].1 == theta {
             let (b, _, db) = asteroids.remove(0);
@@ -139,7 +138,7 @@ fn part2(asteroids: &Vec<Point>, center: &Point, nth: usize) -> Point {
             } else {
                 asteroids.push((a, theta, da));
                 a = b;
-                da = db
+                da = db;
             }
             //   println!("{:?}", asteroids[asteroids.len()-1]);
         }
@@ -199,6 +198,7 @@ mod tests {
     //     assert_eq!(cross3(&p3, &p2, &p1), 1);
     // }
 
+    #[allow(dead_code)]
     fn norm(mut a: f64) -> f64 {
         let twopi = 2.0 * std::f64::consts::PI;
         while a < 0.0 {
@@ -267,10 +267,10 @@ mod tests {
     #[test]
     fn test_part2_small_example() {
         let t = ".#....#####...#..
-##...##.#####..##
-##...#...#.#####.
-..#.....X...###..
-..#.#.....#....##";
+                 ##...##.#####..##
+                 ##...#...#.#####.
+                 ..#.....X...###..
+                 ..#.#.....#....##";
         let (asteroids, center) = parse(t);
         let center = center.unwrap();
         assert_eq!(part2(&asteroids, &center, 9), Point { x: 15, y: 1 });

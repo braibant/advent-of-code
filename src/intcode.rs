@@ -52,7 +52,7 @@ fn decode(instruction: i64) -> Instruction {
     };
     let mut modes = vec![];
     let mut acc = instruction / 100;
-    for i in 0..parameters(opcode) {
+    for _ in 0..parameters(opcode) {
         let mode = match acc % 10 {
             0 => ParameterMode::Position,
             1 => ParameterMode::Immediate,
@@ -60,7 +60,7 @@ fn decode(instruction: i64) -> Instruction {
             n => panic!("Illegal parameter mode {}", n),
         };
         modes.push(mode);
-        acc = acc / 10;
+        acc /= 10;
     }
     Instruction { opcode, modes }
 }
@@ -85,9 +85,9 @@ pub struct T {
 pub type Program = Vec<i64>;
 
 impl T {
-    pub fn new(program: &Vec<i64>) -> T {
+    pub fn new(program: &[i64]) -> T {
         T {
-            program: program.clone(),
+            program: program.to_owned(),
             input: vec![],
             output: vec![],
             status: Status::Continue(0),
@@ -115,7 +115,7 @@ impl T {
 
     pub fn pop(&mut self) -> Option<i64> {
         execute(self);
-        if self.output.len() > 0 {
+        if !self.output.is_empty() {
             Some(self.output.remove(0))
         } else {
             None
@@ -124,10 +124,7 @@ impl T {
 
     pub fn is_halted(&mut self) -> bool {
         execute(self);
-        match self.status {
-            Status::Halt => true,
-            _ => false,
-        }
+        matches!(self.status, Status::Halt)
     }
 
     pub fn flush(&mut self) -> Vec<i64> {
@@ -186,7 +183,7 @@ impl T {
                 Opcode::Input => {
                     // TODO
                     let addr = self.address(&instruction, pc, 1);
-                    if self.input.len() > 0 {
+                    if !self.input.is_empty() {
                         let arg = self.input.remove(0);
                         self.set(addr, arg);
                         None
@@ -262,7 +259,7 @@ pub fn execute(vm: &mut T) {
         match vm.status {
             Status::Halt => break,
             Status::Blocked(pc) => {
-                if vm.input.len() > 0 {
+                if !vm.input.is_empty() {
                     vm.status = Status::Continue(pc)
                 } else {
                     break;
@@ -275,7 +272,7 @@ pub fn execute(vm: &mut T) {
 
 pub fn from_string(program: &str) -> Vec<i64> {
     let program: Vec<_> = program
-        .split(",")
+        .split(',')
         .map(|s| s.parse::<i64>().unwrap())
         .collect();
     program

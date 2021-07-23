@@ -83,7 +83,7 @@ fn raster(pts: HashSet<(i32, i32)>) -> Vec<Vec<bool>> {
 }
 
 // TODO: move to mini bitmap library
-fn print(m: &Vec<Vec<bool>>) {
+fn print(m: &[Vec<bool>]) {
     for line in m.iter() {
         for &c in line.iter() {
             if c {
@@ -92,7 +92,7 @@ fn print(m: &Vec<Vec<bool>>) {
                 print!(" ")
             }
         }
-        println!("")
+        println!()
     }
 }
 

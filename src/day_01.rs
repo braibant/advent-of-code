@@ -10,7 +10,7 @@ fn fuel(mass: u64) -> u64 {
 pub fn run(filename: String) {
     let contents = std::fs::read_to_string(filename).unwrap();
     let modules: Vec<_> = contents
-        .split("\n")
+        .split('\n')
         .map(|s| s.parse::<u64>().unwrap())
         .collect();
 

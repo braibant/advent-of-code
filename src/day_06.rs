@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 type T = HashMap<String, Vec<String>>;
 
+#[allow(dead_code)]
 fn print(t: &T) {
     for (center_of_mass, objects) in t.iter() {
         println!("{} -> {}", center_of_mass, format!("{:?}", objects))
@@ -63,11 +64,11 @@ fn distance(parent: &HashMap<String, String>, left: &str, right: &str) -> usize 
 }
 
 fn parse(s: &str) -> (T, HashMap<String, String>) {
-    let lines: Vec<_> = s.split("\n").collect();
+    let lines: Vec<_> = s.split('\n').collect();
     let raw_orbits: Vec<(String, String)> = lines
         .iter()
         .map(|s| {
-            let o: Vec<_> = s.split(")").collect();
+            let o: Vec<_> = s.split(')').collect();
             assert_eq!(o.len(), 2);
             (o[0].to_string(), o[1].to_string())
         })
@@ -77,7 +78,7 @@ fn parse(s: &str) -> (T, HashMap<String, String>) {
     let mut parents: HashMap<String, String> = HashMap::new();
     for (center_of_mass, object) in raw_orbits.into_iter() {
         parents.insert(object.clone(), center_of_mass.clone());
-        let mut objects = orbits.entry(center_of_mass).or_insert(vec![]);
+        let objects = orbits.entry(center_of_mass).or_insert_with(Vec::new);
         objects.push(object)
     }
     (orbits, parents)
@@ -110,6 +111,7 @@ K)L";
         assert_eq!(42, indirect(&orbits, "COM", 1))
     }
 
+    #[test]
     fn test_example_part2() {
         let s = "COM)B
 B)C

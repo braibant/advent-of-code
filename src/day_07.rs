@@ -89,6 +89,7 @@ where
     output
 }
 
+#[allow(dead_code)]
 fn best_signal_without_feedback(program: &Vec<i64>) -> Option<i64> {
     let permutations = generate_permutations(&vec![0, 1, 2, 3, 4]);
 
@@ -100,6 +101,7 @@ fn best_signal_without_feedback(program: &Vec<i64>) -> Option<i64> {
     best_signal
 }
 
+#[allow(dead_code)]
 fn best_signal_with_feedback(program: &Vec<i64>) -> Option<i64> {
     let permutations = generate_permutations(&vec![5, 6, 7, 8, 9]);
 
@@ -113,7 +115,7 @@ fn best_signal_with_feedback(program: &Vec<i64>) -> Option<i64> {
 
 pub fn run(filename: String) {
     let program = intcode::read_intcode_program(&filename);
-    let mut permutations = generate_permutations(&vec![0, 1, 2, 3, 4]);
+    let permutations = generate_permutations(&vec![0, 1, 2, 3, 4]);
 
     let best_signal = permutations
         .iter()
@@ -121,7 +123,7 @@ pub fn run(filename: String) {
         .max();
     println!("{:?}", best_signal);
 
-    let mut permutations = generate_permutations(&vec![5, 6, 7, 8, 9]);
+    let permutations = generate_permutations(&vec![5, 6, 7, 8, 9]);
 
     let best_signal = permutations
         .iter()

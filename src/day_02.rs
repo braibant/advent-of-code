@@ -38,7 +38,7 @@ mod tests {
 
     #[test]
     fn test_2() {
-        let mut p = vec![2, 3, 0, 3, 99];
+        let p = vec![2, 3, 0, 3, 99];
         let mut vm = intcode::T::new(&p);
         intcode::execute(&mut vm);
         assert_eq!(vm.program, vec![2, 3, 0, 6, 99])
@@ -46,7 +46,7 @@ mod tests {
 
     #[test]
     fn test_3() {
-        let mut p = vec![2, 4, 4, 5, 99, 0];
+        let p = vec![2, 4, 4, 5, 99, 0];
         let mut vm = intcode::T::new(&p);
         intcode::execute(&mut vm);
         assert_eq!(vm.program, vec![2, 4, 4, 5, 99, 9801])

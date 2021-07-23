@@ -1,4 +1,4 @@
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
 // In this problem, we consider passwords which are 6 digits decimal numbers.
 // We need to do two things with those numbers: iter over a range, and select the digits of an individual number. We could use two different representations: a) represent the numbers as vectors of digits (which makes the indexing operation trivial, at the expanse of having to implement the range iteration) or iter over an integer range, and convert integers in the given range to vectors of digits. We chose the later here.
@@ -9,19 +9,19 @@ mod v1 {
     const N: usize = 6;
     type T = u32;
     lazy_static! {
-        static ref powers_of_10: [T; N] = {
+        static ref POWERS_OF_10: [T; N] = {
             let mut t = [0; N];
             let mut n = 1;
             for i in 0..N {
                 t[i] = n;
-                n = n * 10;
+                n *= 10;
             }
             t
         };
     }
 
     fn digit(n: u32, i: usize) -> u8 {
-        ((n / powers_of_10[i]) % 10) as u8
+        ((n / POWERS_OF_10[i]) % 10) as u8
     }
 
     // N = ABCDEF is represented as the vector [F, E, D, C, B, A]
@@ -70,8 +70,8 @@ mod v2 {
 
     pub fn range(start: &T, end: &T) -> Range {
         Range {
-            next: start.clone(),
-            end: end.clone(),
+            next: start.to_owned(),
+            end: end.to_owned(),
         }
     }
 
@@ -112,7 +112,7 @@ mod v2 {
     }
 }
 
-fn check_password1(n: &Vec<u8>) -> bool {
+fn check_password1(n: &[u8]) -> bool {
     let mut consecutive_digits_equal = false;
     let mut digits_decrease_or_equal = true;
     for i in 1..n.len() {
@@ -124,7 +124,7 @@ fn check_password1(n: &Vec<u8>) -> bool {
 }
 
 // For part 2, we need to check an extra condition: there must be a group of consecutive equal digits of length exactly 2. There are a couple of ways to do that: by computing the length of each group of repeating digits, then checking the existence of one of size 2; or simply by computing the number of times each digit is repeated and exploiting the fact that the "digits increase or are equal" property entail that identical digits must be part of the same group
-fn check_digit_groups(n: &Vec<u8>) -> bool {
+fn check_digit_groups(n: &[u8]) -> bool {
     let mut digits: [u32; 10] = [0; 10];
     for &digit in n.iter() {
         digits[digit as usize] += 1
@@ -136,7 +136,7 @@ fn check_digit_groups(n: &Vec<u8>) -> bool {
 pub fn run(filename: String) {
     let contents = std::fs::read_to_string(filename).unwrap();
 
-    let range: Vec<_> = contents.split("-").collect();
+    let range: Vec<_> = contents.split('-').collect();
     let low: u32 = range[0].parse().unwrap();
     let high: u32 = range[1].parse().unwrap();
 
