@@ -1,41 +1,4 @@
-#[derive(Clone, Copy, Debug)]
-struct Vector3<T> {
-    x: T,
-    y: T,
-    z: T,
-}
-
-use std::ops::Add;
-impl<T: Add<Output = T>> Add for Vector3<T> {
-    type Output = Self;
-
-    fn add(self, other: Self) -> Self {
-        Self {
-            x: self.x + other.x,
-            y: self.y + other.y,
-            z: self.z + other.z,
-        }
-    }
-}
-
-impl<T> Vector3<T> {
-    pub fn new(x: T, y: T, z: T) -> Vector3<T> {
-        Vector3 { x: x, y: y, z: z }
-    }
-}
-
-use std::ops::Index;
-impl<T> Index<usize> for Vector3<T> {
-    type Output = T;
-    fn index(&self, index: usize) -> &T {
-        match index {
-            0 => &self.x,
-            1 => &self.y,
-            2 => &self.z,
-            _ => panic!("Invalid index"),
-        }
-    }
-}
+use crate::vector3::*;
 
 #[derive(Debug)]
 struct T {
@@ -201,7 +164,8 @@ pub fn run() {
     // It turns out that the first repeating state on a given axis is the
     // projection of the initial state along this axis. This simplifies the
     // problem quite a bit, since we "just" need to compute the lcm of the
-    // periods involved to figure out the period of the whole system. Here, I simply used wolfram alpha to compute the lcm
+    // periods involved to figure out the period of the whole system. Here, I
+    // simply used wolfram alpha to compute the lcm
     println!("{:?}", periods);
 }
 

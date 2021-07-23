@@ -15,6 +15,7 @@ mod day_11;
 mod day_12;
 
 mod intcode;
+mod vector3;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
