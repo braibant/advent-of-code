@@ -1,11 +1,11 @@
 use crate::intcode;
 use crossterm::event::{read, Event};
+use crossterm::queue;
 use crossterm::{
     cursor,
     style::{self, Stylize},
-    terminal, ExecutableCommand, QueueableCommand, Result,
+    // terminal, ExecutableCommand, QueueableCommand, Result,
 };
-use crossterm::{execute, queue};
 use std::collections::HashMap;
 use std::io::{stdout, Write};
 
@@ -16,8 +16,8 @@ fn part1(program: &[i64]) {
     let mut o = vm.flush();
     o.reverse();
     while !o.is_empty() {
-        let x = o.pop().unwrap();
-        let y = o.pop().unwrap();
+        let _x = o.pop().unwrap();
+        let _y = o.pop().unwrap();
         let tile = o.pop().unwrap();
         if tile == 2 {
             part1 += 1
