@@ -65,6 +65,7 @@ fn decode(instruction: i64) -> Instruction {
     Instruction { opcode, modes }
 }
 
+#[derive(Copy, Clone)]
 pub enum Status {
     // Intcode interpreter is halted
     Halt,
@@ -74,12 +75,14 @@ pub enum Status {
     Continue(usize),
 }
 
+#[derive(Clone)]
 pub struct T {
     pub program: Vec<i64>,
     pub input: Vec<i64>,
     pub output: Vec<i64>,
     pub status: Status,
     relative_base: i64,
+    steps: usize,
 }
 
 pub type Program = Vec<i64>;
@@ -92,7 +95,12 @@ impl T {
             output: vec![],
             status: Status::Continue(0),
             relative_base: 0,
+            steps: 0,
         }
+    }
+
+    pub fn steps(&self) -> usize {
+        self.steps
     }
 
     fn get(&mut self, address: usize) -> i64 {
@@ -110,7 +118,7 @@ impl T {
     }
 
     pub fn push(&mut self, i: i64) {
-        self.input.push(i)
+        self.input.push(i);
     }
 
     pub fn pop(&mut self) -> Option<i64> {
@@ -125,6 +133,11 @@ impl T {
     pub fn is_halted(&mut self) -> bool {
         execute(self);
         matches!(self.status, Status::Halt)
+    }
+
+    pub fn is_blocked_on_input(&mut self) -> bool {
+        execute(self);
+        matches!(self.status, Status::Blocked(_))
     }
 
     pub fn flush(&mut self) -> Vec<i64> {
@@ -181,7 +194,6 @@ impl T {
                 }
 
                 Opcode::Input => {
-                    // TODO
                     let addr = self.address(&instruction, pc, 1);
                     if !self.input.is_empty() {
                         let arg = self.input.remove(0);
@@ -250,6 +262,7 @@ impl T {
         };
 
         self.status = status;
+        self.steps += 1;
     }
 }
 
