@@ -16,7 +16,16 @@ use std::collections::HashMap;
 // that ORE + NEED = 1 FUEL + RESIDUE. We process need one element at a time,
 // applying the unique reaction that produces this element in reverse, modifying
 // NEED (with the reactants we need to apply this reaction) and RESIDUE (with
-// the left over reactants).
+// the left over reactants). Let's order chemicals using their heigh (height of
+// ore = 0, height of rhs (where lhs[0] ... lhs[n] -> rhs) = 1 +
+// max(height(lhs[i]))). The multi set of the heights of the elements in NEED is
+// well founded, and termination ensue.
+
+// There are quite a few interesting variations of this problem:
+// Is there multiple elements on the RHS?
+// Are the coefficients on the RHS not one?
+// Are there multiple reactions that produce the same consituents?
+// Are there cycles in the reactions?
 
 #[derive(Debug, Clone)]
 struct Reaction {
