@@ -1,6 +1,6 @@
 use crate::intcode;
 
-pub fn run(filename: String) {
+pub fn run(filename: &str) {
     let program = intcode::read_intcode_program(&filename);
     let mut vm = intcode::T::new(&program);
     vm.push(1);

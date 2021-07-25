@@ -1,6 +1,6 @@
 use super::intcode;
 
-pub fn run(filename: String) {
+pub fn run(filename: &str) {
     let program = intcode::read_intcode_program(&filename);
 
     // part 1

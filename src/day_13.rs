@@ -31,25 +31,27 @@ fn draw(state: &HashMap<(i64, i64), i64>, score: i64) {
     queue!(
         stdout,
         crossterm::terminal::Clear(crossterm::terminal::ClearType::All)
-    );
+    )
+    .unwrap();
 
     queue!(
         stdout,
         cursor::MoveTo(100, 10),
         style::PrintStyledContent((format!("{}", score)).red())
-    );
+    )
+    .unwrap();
     for (&(x, y), tile) in state.iter() {
-        queue!(stdout, cursor::MoveTo(x as u16, y as u16));
+        queue!(stdout, cursor::MoveTo(x as u16, y as u16)).unwrap();
         match tile {
-            0 => queue!(stdout, style::PrintStyledContent("█".black())),
-            1 => queue!(stdout, style::PrintStyledContent("█".red())),
-            2 => queue!(stdout, style::PrintStyledContent("█".blue())),
-            3 => queue!(stdout, style::PrintStyledContent("█".green())),
-            4 => queue!(stdout, style::PrintStyledContent("o".yellow())),
+            0 => queue!(stdout, style::PrintStyledContent("█".black())).unwrap(),
+            1 => queue!(stdout, style::PrintStyledContent("█".red())).unwrap(),
+            2 => queue!(stdout, style::PrintStyledContent("█".blue())).unwrap(),
+            3 => queue!(stdout, style::PrintStyledContent("█".green())).unwrap(),
+            4 => queue!(stdout, style::PrintStyledContent("o".yellow())).unwrap(),
             _ => panic!(),
         };
     }
-    stdout.flush();
+    stdout.flush().unwrap();
 }
 
 // output instructions specify the x position (distance from the left), y
@@ -70,7 +72,7 @@ fn part2(program: &[i64]) {
     let mut paddle_x = 0;
     let mut ball_x = 0;
     let mut auto = false;
-    crossterm::terminal::enable_raw_mode();
+    crossterm::terminal::enable_raw_mode().unwrap();
     while !(vm.is_halted() && vm.output.is_empty()) {
         draw(&state, score);
         if 3 <= vm.output.len() {
@@ -129,7 +131,7 @@ fn part2(program: &[i64]) {
     println!("Score: {} (steps: {})", score, vm.steps())
 }
 
-pub fn run(filename: String) {
+pub fn run(filename: &str) {
     let program = intcode::read_intcode_program(&filename);
 
     part1(&program);

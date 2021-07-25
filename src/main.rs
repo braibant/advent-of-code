@@ -38,7 +38,7 @@ fn main() {
             "10" => day_10::run(args[2].clone()),
             "11" => day_11::run(args[2].clone()),
             "12" => day_12::run(),
-            "13" => day_13::run(args[2].clone()),
+            "13" => day_13::run(&args[2].clone()),
             "14" => day_14::run(&args[2].clone()),
             s => {
                 println!("Unknown command: {}", s);

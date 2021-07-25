@@ -48,7 +48,7 @@ fn print(img: &[u8]) {
     println!("{}", acc);
 }
 
-pub fn run(filename: String) {
+pub fn run(filename: &str) {
     let content: String = std::fs::read_to_string(filename).unwrap();
     let img = content.as_bytes();
     let layer = (0..LAYERS)

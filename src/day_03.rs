@@ -75,7 +75,7 @@ fn intersections(p1: &HashMap<Vector2d, i64>, p2: &HashMap<Vector2d, i64>) -> Ha
     s1.intersection(&s2).cloned().collect()
 }
 
-pub fn run(filename: String) {
+pub fn run(filename: &str) {
     let contents = std::fs::read_to_string(filename).unwrap();
 
     let wires: Vec<_> = contents.split('\n').collect();

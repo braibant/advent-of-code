@@ -96,7 +96,7 @@ fn print(m: &[Vec<bool>]) {
     }
 }
 
-pub fn run(filename: String) {
+pub fn run(filename: &str) {
     let program = intcode::read_intcode_program(&filename);
     let t = T::new();
     let part1 = paint(&t, &program);

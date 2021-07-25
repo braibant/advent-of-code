@@ -113,7 +113,7 @@ fn best_signal_with_feedback(program: &Vec<i64>) -> Option<i64> {
     best_signal
 }
 
-pub fn run(filename: String) {
+pub fn run(filename: &str) {
     let program = intcode::read_intcode_program(&filename);
     let permutations = generate_permutations(&vec![0, 1, 2, 3, 4]);
 

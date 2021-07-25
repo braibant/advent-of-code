@@ -150,7 +150,7 @@ fn part2(asteroids: &[Point], center: &Point, nth: usize) -> Point {
     }
 }
 
-pub fn run(filename: String) {
+pub fn run(filename: &str) {
     let contents = std::fs::read_to_string(filename).unwrap();
 
     let (asteroids, _) = parse(&contents);

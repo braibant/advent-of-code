@@ -84,7 +84,7 @@ fn parse(s: &str) -> (T, HashMap<String, String>) {
     (orbits, parents)
 }
 
-pub fn run(filename: String) {
+pub fn run(filename: &str) {
     let contents = std::fs::read_to_string(filename).unwrap();
     let (orbits, parents) = parse(&contents);
     println!("{}", indirect(&orbits, "COM", 1));

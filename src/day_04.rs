@@ -133,7 +133,7 @@ fn check_digit_groups(n: &[u8]) -> bool {
     digits.iter().any(|&tally| tally == 2)
 }
 
-pub fn run(filename: String) {
+pub fn run(filename: &str) {
     let contents = std::fs::read_to_string(filename).unwrap();
 
     let range: Vec<_> = contents.split('-').collect();
