@@ -7,38 +7,11 @@
 //    "small". We could decide to change the exploration strategy once we have
 //    found the oxygen generator, but this feels more complicated.
 use crate::intcode;
+use crate::vector2::Vector2;
 use lazy_static::lazy_static;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::collections::VecDeque;
-
-#[derive(Clone, Copy, Eq, Hash, PartialEq, Debug)]
-struct Vector2 {
-    x: i64,
-    y: i64,
-}
-
-use std::ops::Add;
-impl Add for Vector2 {
-    type Output = Vector2;
-
-    fn add(self: Vector2, b: Vector2) -> Vector2 {
-        Vector2 {
-            x: self.x + b.x,
-            y: self.y + b.y,
-        }
-    }
-}
-
-impl Vector2 {
-    fn new(x: i64, y: i64) -> Vector2 {
-        Vector2 { x, y }
-    }
-
-    fn norm1(&self, other: &Vector2) -> i64 {
-        (self.x - other.x).abs() + (self.y - other.y).abs()
-    }
-}
 
 #[derive(Clone, Copy, Debug)]
 enum Dir {
@@ -68,7 +41,7 @@ lazy_static! {
     };
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 enum Cell {
     Wall,
     Tile,
@@ -135,7 +108,7 @@ impl T {
             if v == *tgt {
                 let mut ptr = v;
                 let mut path = vec![];
-                while ptr != self.pos {
+                while ptr != *src {
                     let (prev, dir) = parent.get(&ptr).unwrap();
                     path.push(*dir);
                     ptr = *prev;
@@ -162,6 +135,26 @@ impl T {
     }
 }
 
+fn flood_fill(t: &T) -> i64 {
+    let mut todo = VecDeque::new();
+    let mut visited = HashSet::new();
+    let mut time = 0;
+    todo.push_back((t.oxygen.unwrap(), 0));
+    while !todo.is_empty() {
+        let (e, d) = todo.pop_front().unwrap();
+        if !visited.contains(&e) && *t.world.get(&e).unwrap() == Cell::Tile {
+            visited.insert(e);
+            for (_, dir) in DIRS.iter() {
+                todo.push_back((e + *dir, d + 1))
+            }
+            if time < d {
+                time = d
+            }
+        }
+    }
+    time
+}
+
 // 0: The repair droid hit a wall. Its position has not changed.
 // 1: The repair droid has moved one step in the requested direction.
 // 2: The repair droid has moved one step in the requested direction; its new position is the location of the oxygen system.
@@ -185,14 +178,42 @@ pub fn run(filename: &str) {
             }
         }
     }
-    let path = state
+
+    let minx = state.world.keys().map(|v| v.x).min().unwrap();
+    let maxx = state.world.keys().map(|v| v.x).max().unwrap();
+    let miny = state.world.keys().map(|v| v.y).min().unwrap();
+    let maxy = state.world.keys().map(|v| v.y).max().unwrap();
+
+    let oxygen = state.oxygen.unwrap();
+    for y in miny..(maxy + 1) {
+        print!("{:>4} ", y);
+        for x in minx..(maxx + 1) {
+            let p = Vector2::new(x, y);
+            if p == oxygen {
+                print!("O")
+            } else if p == Vector2::new(0, 0) {
+                print!("S")
+            } else {
+                match state.world.get(&p) {
+                    None => print!("+"),
+                    Some(Cell::Wall) => print!("#"),
+                    Some(Cell::Tile) => print!("."),
+                }
+            }
+        }
+        println!("")
+    }
+
+    let path: Vec<_> = state
         .shortest_path(&Vector2::new(0, 0), &state.oxygen.unwrap())
         .unwrap();
 
-    let mut pos = Vector2::new(0, 0);
-    for dir in path.iter() {
-        pos = pos + dir.to_vector2();
-        println!("{:?}", pos);
-    }
-    println!("{:?}", path)
+    // path.reverse();
+    // let mut pos = Vector2::new(0, 0);
+    // for dir in path.iter() {
+    //     pos = pos + dir.to_vector2();
+    //     println!("{:?}", pos);
+    // }
+    println!("{:?}", path.len());
+    println!("{}", flood_fill(&state));
 }

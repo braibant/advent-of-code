@@ -18,6 +18,7 @@ mod day_14;
 mod day_15;
 
 mod intcode;
+mod vector2;
 mod vector3;
 
 fn main() {
