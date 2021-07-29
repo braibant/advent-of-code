@@ -114,6 +114,7 @@ mod tests {
         assert_eq!(result, parse("52432133"));
     }
 
+    #[test]
     fn test_decode() {
         let signal = "03036732577212944063491565474664";
         let offset: usize = signal[0..7].parse().unwrap();

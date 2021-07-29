@@ -121,6 +121,10 @@ impl T {
         self.input.push(i);
     }
 
+    pub fn push_u8(&mut self, i: u8) {
+        self.input.push(i as i64);
+    }
+
     pub fn pop(&mut self) -> Option<i64> {
         execute(self);
         if !self.output.is_empty() {
@@ -146,6 +150,10 @@ impl T {
             acc.push(out)
         }
         acc
+    }
+
+    pub fn execute(&mut self) {
+        execute(self)
     }
 
     // Compute the value of the parameter `i` of the `instruction` living at position `pc`. Parameters are 1-indexed.
