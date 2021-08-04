@@ -18,6 +18,7 @@ mod day_14;
 mod day_15;
 mod day_16;
 mod day_17;
+mod day_18;
 
 mod intcode;
 mod vector2;
@@ -47,6 +48,7 @@ fn main() {
             "15" => day_15::run(&args[2]),
             "16" => day_16::run(&args[2]),
             "17" => day_17::run(&args[2]),
+            "18" => day_18::run(&args[2]),
             s => {
                 println!("Unknown command: {}", s);
                 std::process::exit(1)

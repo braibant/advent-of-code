@@ -44,7 +44,7 @@ fn is_path_complete(problem: &Problem, instructions: &[Instruction]) -> bool {
             Instruction::R => dir = (dir + 1).rem_euclid(4),
             Instruction::F(n) => {
                 let (dx, dy) = DIRS[dir as usize];
-                for i in 0..*n {
+                for _i in 0..*n {
                     x += dx;
                     y += dy;
                     if !problem.scaffold.contains(&(x, y)) {
