@@ -22,10 +22,11 @@ lazy_static! {
     static ref DIRS: [Vector2; 4] = [Vector2::new(0, -1), Vector2::new(1, 0), Vector2::new(0, 1), Vector2::new(-1, 0)];
 }
 
+#[derive(Clone)]
 struct T {
     doors: HashMap<Vector2, u8>,
     keys: HashMap<Vector2, u8>,
-    entrance: Vector2,
+    entrance: Vec<Vector2>,
     tiles: HashSet<Vector2>,
 }
 
@@ -34,7 +35,7 @@ impl T {
         T {
             doors: HashMap::new(),
             keys: HashMap::new(),
-            entrance: Vector2::new(0, 0),
+            entrance: vec![Vector2::new(0, 0)],
             tiles: HashSet::new(),
         }
     }
@@ -67,16 +68,32 @@ fn neighbours(t: &T, p: Vector2) -> Vec<Vector2> {
 
 #[derive(Clone, Eq, PartialEq, Hash, Debug)]
 struct Frame {
-    pos: Vector2,
+    pos: Vec<Vector2>,
     keys: Vec<u8>,
 }
 
-// BFS of the set of reachable keys given the current state.
-fn reachable_keys(t: &T, frame: &Frame) -> Vec<(u8, u32)> {
+impl Frame {
+    fn set_position(&self, robot: usize, pos: Vector2) -> Frame {
+        let mut frame = self.clone();
+        frame.pos[robot] = pos;
+        frame
+    }
+
+    fn add_key(&self, key: u8) -> Frame {
+        let mut frame = self.clone();
+        assert!(frame.keys.iter().all(|&k| k != key));
+        frame.keys.push(key);
+        frame.keys.sort();
+        frame
+    }
+}
+
+// BFS of the set of reachable keys given the current state. Return a list of moves [key, cost]
+fn reachable_keys(t: &T, frame: &Frame, robot: usize) -> Vec<(u8, u32)> {
     let mut queue: VecDeque<(Vector2, u32)> = std::collections::VecDeque::new();
     let mut reachable = HashMap::new();
     let mut visited = HashSet::new();
-    queue.push_back((frame.pos, 0));
+    queue.push_back((frame.pos[robot], 0));
     while !queue.is_empty() {
         let (pos, distance) = queue.pop_front().unwrap();
         if visited.contains(&pos) {
@@ -111,21 +128,24 @@ fn dijkstra(t: &T) -> Option<u32> {
     let mut cost: HashMap<Frame, _> = HashMap::new(); // Absence from the map means cost = + \infnty
     let mut queue: VecDeque<Frame> = std::collections::VecDeque::new();
     let init_frame = Frame {
-        pos: t.entrance,
+        pos: t.entrance.clone(),
         keys: vec![],
     };
     queue.push_back(init_frame.clone());
     cost.insert(init_frame, 0);
     while !queue.is_empty() {
         let frame = queue.pop_front().unwrap();
-        //    println!("{:?}", frame);
-        let children: Vec<(u8, u32)> = reachable_keys(t, &frame);
-        for (k, add) in children.iter() {
+        let children: Vec<_> = (0..frame.pos.len())
+            .flat_map(|i| {
+                reachable_keys(t, &frame, i)
+                    .iter()
+                    .map(|(pos, cost)| (i, *pos, *cost))
+                    .collect::<Vec<_>>()
+            })
+            .collect();
+        for (robot, k, add) in children.iter() {
             let pos = t.key_position(*k).unwrap();
-            let mut keys = frame.keys.clone();
-            keys.push(*k);
-            keys.sort();
-            let next_frame = Frame { pos, keys };
+            let next_frame = frame.add_key(*k).set_position(*robot, pos);
             let &c0 = cost.get(&frame).unwrap();
             let update = match cost.get(&next_frame) {
                 Some(&c1) => c1 > c0 + add,
@@ -168,7 +188,7 @@ fn parse(content: &str) -> T {
                 t.doors.insert(pos, door);
                 t.tiles.insert(pos);
             } else if c == '@' {
-                t.entrance = pos;
+                t.entrance[0] = pos;
                 t.tiles.insert(pos);
             } else if c == '.' {
                 t.tiles.insert(pos);
@@ -182,9 +202,33 @@ fn parse(content: &str) -> T {
     t
 }
 
+fn split_vault(t: &T) -> T {
+    assert!(t.entrance.len() == 1);
+    let mut t = t.clone();
+    let entrance = t.entrance[0];
+    t.entrance.clear();
+
+    // Add the 4 new vault entrance
+    t.entrance.push(entrance + Vector2::new(-1, -1));
+    t.entrance.push(entrance + Vector2::new(1, -1));
+    t.entrance.push(entrance + Vector2::new(-1, 1));
+    t.entrance.push(entrance + Vector2::new(1, 1));
+
+    // Add new walls
+    t.tiles.remove(&(entrance + Vector2::new(1, 0)));
+    t.tiles.remove(&(entrance + Vector2::new(-1, 0)));
+    t.tiles.remove(&(entrance + Vector2::new(0, 1)));
+    t.tiles.remove(&(entrance + Vector2::new(0, -1)));
+    t
+}
+
 pub fn run(filename: &str) {
     let content = std::fs::read_to_string(filename).unwrap();
     let t = parse(&content);
+    println!("{:?}", dijkstra(&t));
+
+    // part 2
+    let t = split_vault(&t);
     println!("{:?}", dijkstra(&t));
 }
 
