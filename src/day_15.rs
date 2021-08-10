@@ -22,7 +22,7 @@ enum Dir {
 }
 
 impl Dir {
-    fn to_vector2(&self) -> Vector2 {
+    fn to_vector2(&self) -> Vector2<i64> {
         match self {
             Dir::N => Vector2::new(0, 1),
             Dir::S => Vector2::new(0, -1),
@@ -33,7 +33,7 @@ impl Dir {
 }
 
 lazy_static! {
-    static ref DIRS: Vec<(Dir, Vector2)> = {
+    static ref DIRS: Vec<(Dir, Vector2<i64>)> = {
         // N, S, W, E
         let dirs = vec![(Dir::N, Dir::N.to_vector2()),
          (Dir::S, Dir::S.to_vector2()), (Dir::W, Dir::W.to_vector2()),(Dir::E, Dir::E.to_vector2())];
@@ -49,10 +49,10 @@ enum Cell {
 
 #[derive(Debug)]
 struct T {
-    world: HashMap<Vector2, Cell>,
-    to_visit: Vec<Vector2>,
-    pos: Vector2,
-    oxygen: Option<Vector2>,
+    world: HashMap<Vector2<i64>, Cell>,
+    to_visit: Vec<Vector2<i64>>,
+    pos: Vector2<i64>,
+    oxygen: Option<Vector2<i64>>,
     instructions: Vec<Dir>,
 }
 
@@ -68,7 +68,7 @@ impl T {
     }
 
     // It might be the case that cells are present in to_visit multiple times.
-    fn move_to(&mut self, pos: Vector2) {
+    fn move_to(&mut self, pos: Vector2<i64>) {
         if self.world.insert(pos, Cell::Tile).is_none() {
             for (_, dir) in DIRS.iter() {
                 let next = pos + *dir;
@@ -80,7 +80,7 @@ impl T {
         self.pos = pos
     }
 
-    fn wall(&mut self, pos: Vector2) {
+    fn wall(&mut self, pos: Vector2<i64>) {
         self.world.insert(pos, Cell::Wall);
         self.instructions.clear()
     }
@@ -98,13 +98,13 @@ impl T {
         self.instructions.pop()
     }
 
-    fn shortest_path(&self, src: &Vector2, tgt: &Vector2) -> Option<Vec<Dir>> {
+    fn shortest_path(&self, src: &Vector2<i64>, tgt: &Vector2<i64>) -> Option<Vec<Dir>> {
         let mut visited = HashSet::new();
-        let mut parent: HashMap<Vector2, (Vector2, Dir)> = HashMap::new();
-        let mut q: VecDeque<Vector2> = VecDeque::new();
+        let mut parent: HashMap<Vector2<i64>, (Vector2<i64>, Dir)> = HashMap::new();
+        let mut q: VecDeque<Vector2<i64>> = VecDeque::new();
         q.push_back(*src);
         while !q.is_empty() {
-            let v: Vector2 = q.pop_front().unwrap();
+            let v: Vector2<i64> = q.pop_front().unwrap();
             if v == *tgt {
                 let mut ptr = v;
                 let mut path = vec![];

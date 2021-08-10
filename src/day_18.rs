@@ -19,15 +19,15 @@ use std::collections::VecDeque;
 
 lazy_static! {
     // N, E, S, W. (0,0) is top left of screen.
-    static ref DIRS: [Vector2; 4] = [Vector2::new(0, -1), Vector2::new(1, 0), Vector2::new(0, 1), Vector2::new(-1, 0)];
+    static ref DIRS: [Vector2<i64>; 4] = [Vector2::new(0, -1), Vector2::new(1, 0), Vector2::new(0, 1), Vector2::new(-1, 0)];
 }
 
 #[derive(Clone)]
 struct T {
-    doors: HashMap<Vector2, u8>,
-    keys: HashMap<Vector2, u8>,
-    entrance: Vec<Vector2>,
-    tiles: HashSet<Vector2>,
+    doors: HashMap<Vector2<i64>, u8>,
+    keys: HashMap<Vector2<i64>, u8>,
+    entrance: Vec<Vector2<i64>>,
+    tiles: HashSet<Vector2<i64>>,
 }
 
 impl T {
@@ -39,17 +39,7 @@ impl T {
             tiles: HashSet::new(),
         }
     }
-
-    fn door_position(&self, door: u8) -> Option<Vector2> {
-        for (&pos, &d) in self.doors.iter() {
-            if d == door {
-                return Some(pos);
-            }
-        }
-        return None;
-    }
-
-    fn key_position(&self, key: u8) -> Option<Vector2> {
+    fn key_position(&self, key: u8) -> Option<Vector2<i64>> {
         for (&pos, &k) in self.keys.iter() {
             if k == key {
                 return Some(pos);
@@ -59,7 +49,7 @@ impl T {
     }
 }
 
-fn neighbours(t: &T, p: Vector2) -> Vec<Vector2> {
+fn neighbours(t: &T, p: Vector2<i64>) -> Vec<Vector2<i64>> {
     DIRS.iter()
         .map(|&d| p + d)
         .filter(|n| t.tiles.contains(&n))
@@ -68,12 +58,12 @@ fn neighbours(t: &T, p: Vector2) -> Vec<Vector2> {
 
 #[derive(Clone, Eq, PartialEq, Hash, Debug)]
 struct Frame {
-    pos: Vec<Vector2>,
+    pos: Vec<Vector2<i64>>,
     keys: Vec<u8>,
 }
 
 impl Frame {
-    fn set_position(&self, robot: usize, pos: Vector2) -> Frame {
+    fn set_position(&self, robot: usize, pos: Vector2<i64>) -> Frame {
         let mut frame = self.clone();
         frame.pos[robot] = pos;
         frame
@@ -90,7 +80,7 @@ impl Frame {
 
 // BFS of the set of reachable keys given the current state. Return a list of moves [key, cost]
 fn reachable_keys(t: &T, frame: &Frame, robot: usize) -> Vec<(u8, u32)> {
-    let mut queue: VecDeque<(Vector2, u32)> = std::collections::VecDeque::new();
+    let mut queue: VecDeque<(Vector2<i64>, u32)> = std::collections::VecDeque::new();
     let mut reachable = HashMap::new();
     let mut visited = HashSet::new();
     queue.push_back((frame.pos[robot], 0));
