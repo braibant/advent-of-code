@@ -157,7 +157,7 @@ pub fn run(filename: &str) {
 #[cfg(test)]
 mod tests {
     use super::*;
-
+    #[allow(dead_code)]
     fn test_edges(program: &[i64], y: u32, size: u32) {
         let mut t = T::new(program);
         let min = (0..size)
