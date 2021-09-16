@@ -232,7 +232,7 @@ fn part1(positions: &[(i8, i8)]) -> u64 {
     let mut visited = HashSet::new();
     loop {
         if !visited.insert(state) {
-            return (biodiversity_rating(state));
+            return biodiversity_rating(state);
         }
         state = next(&state);
     }
