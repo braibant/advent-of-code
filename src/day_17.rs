@@ -101,8 +101,8 @@ fn supply_input(vm: &mut intcode::T, input: &Input, feed: u8) {
 
 fn print(vm: &mut intcode::T) {
     vm.execute();
-    while !vm.is_halted() || !vm.output.is_empty() {
-        let c = vm.pop().unwrap();
+    while !vm.is_halted() || vm.outputs() != 0 {
+        let c = vm.get_output().unwrap();
         if c > 255 {
             eprintln!("Non ASCII value: {}", c);
         } else {
@@ -210,8 +210,8 @@ fn collect_data(program: &intcode::Program) -> Problem {
     let mut scaffold = HashSet::new();
     let mut dir = None;
     let mut start = None;
-    while !vm.output.is_empty() {
-        let c = (vm.pop().unwrap() as u8) as char;
+    while vm.outputs() != 0 {
+        let c = vm.get_char().unwrap();
         match c {
             '\n' => {
                 y += 1;

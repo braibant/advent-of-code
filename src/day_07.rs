@@ -15,13 +15,13 @@ fn compute_output_signal(program: &Vec<i64>, phase_settings: &Vec<i64>) -> i64 {
 
     // Propage signal
     amp_a.push(0);
-    amp_b.push(amp_a.pop().unwrap());
-    amp_c.push(amp_b.pop().unwrap());
-    amp_d.push(amp_c.pop().unwrap());
-    amp_e.push(amp_d.pop().unwrap());
+    amp_b.push(amp_a.get_output().unwrap());
+    amp_c.push(amp_b.get_output().unwrap());
+    amp_d.push(amp_c.get_output().unwrap());
+    amp_e.push(amp_d.get_output().unwrap());
 
     // Get final output
-    amp_e.pop().unwrap()
+    amp_e.get_output().unwrap()
 }
 
 fn compute_output_signal_with_feedback(program: &Vec<i64>, phase_settings: &Vec<i64>) -> i64 {
@@ -41,7 +41,7 @@ fn compute_output_signal_with_feedback(program: &Vec<i64>, phase_settings: &Vec<
     let mut amp_e_values = vec![];
     while !amps.iter_mut().all(|amp| amp.is_halted()) {
         for i in 0..5 {
-            if let Some(x) = amps[i].pop() {
+            if let Some(x) = amps[i].get_output() {
                 amps[(i + 1) % 5].push(x);
                 if i == 4 {
                     amp_e_values.push(x)
@@ -50,7 +50,7 @@ fn compute_output_signal_with_feedback(program: &Vec<i64>, phase_settings: &Vec<
         }
     }
 
-    while let Some(e) = amps[4].pop() {
+    while let Some(e) = amps[4].get_output() {
         amp_e_values.push(e)
     }
 

@@ -19,8 +19,8 @@ fn paint(t: &T, program: &intcode::Program) -> T {
     while !vm.is_halted() {
         let input = if t.white.contains(&(t.x, t.y)) { 1 } else { 0 };
         vm.push(input);
-        let paint = vm.pop().unwrap(); // 0 means paint black, 1 means paint white
-        let turn = vm.pop().unwrap(); // 0 means turn left 90 degrees, 1 means turn right 90 degrees.
+        let paint = vm.get_output().unwrap(); // 0 means paint black, 1 means paint white
+        let turn = vm.get_output().unwrap(); // 0 means turn left 90 degrees, 1 means turn right 90 degrees.
         t.painted.insert((t.x, t.y));
         if paint == 0 {
             t.white.remove(&(t.x, t.y));

@@ -78,8 +78,8 @@ pub enum Status {
 #[derive(Clone)]
 pub struct T {
     pub program: Vec<i64>,
-    pub input: Vec<i64>,
-    pub output: Vec<i64>,
+    input: Vec<i64>,
+    output: Vec<i64>,
     pub status: Status,
     relative_base: i64,
     steps: usize,
@@ -125,13 +125,53 @@ impl T {
         self.input.push(i as i64);
     }
 
-    pub fn pop(&mut self) -> Option<i64> {
+    pub fn push_str(&mut self, s: &str) {
+        for c in s.chars() {
+            if c.is_ascii() {
+                self.push_u8(c as u8)
+            } else {
+                panic!("Invalid input {}", s)
+            }
+        }
+    }
+
+    pub fn get_output(&mut self) -> Option<i64> {
         execute(self);
         if !self.output.is_empty() {
             Some(self.output.remove(0))
         } else {
             None
         }
+    }
+
+    pub fn get_outputs(&mut self) -> Vec<i64> {
+        execute(self);
+        let result = self.output.clone();
+        self.output.clear();
+        result
+    }
+
+    pub fn outputs(&self) -> usize {
+        self.output.len()
+    }
+
+    pub fn get_char(&mut self) -> Option<char> {
+        execute(self);
+        if !self.output.is_empty() && 0 <= self.output[0] && self.output[0] < 255 {
+            Some(self.output.remove(0) as u8 as char)
+        } else {
+            None
+        }
+    }
+
+    pub fn get_string(&mut self) -> String {
+        execute(self);
+        let mut buf = String::new();
+        while !self.output.is_empty() && 0 <= self.output[0] && self.output[0] < 255 {
+            let c = self.output.remove(0) as u8 as char;
+            buf.push(c)
+        }
+        buf
     }
 
     pub fn is_halted(&mut self) -> bool {
@@ -142,14 +182,6 @@ impl T {
     pub fn is_blocked_on_input(&mut self) -> bool {
         execute(self);
         matches!(self.status, Status::Blocked(_))
-    }
-
-    pub fn flush(&mut self) -> Vec<i64> {
-        let mut acc = vec![];
-        while let Some(out) = self.pop() {
-            acc.push(out)
-        }
-        acc
     }
 
     pub fn execute(&mut self) {
@@ -326,11 +358,11 @@ mod tests {
         let p = vec![3, 9, 8, 9, 10, 9, 4, 9, 99, -1, 8];
         let mut vm = T::new(&p);
         vm.push(8);
-        assert_eq!(vm.pop(), Some(1));
+        assert_eq!(vm.get_output(), Some(1));
 
         let mut vm = T::new(&p);
         vm.push(7);
-        assert_eq!(vm.pop(), Some(0))
+        assert_eq!(vm.get_output(), Some(0))
     }
 
     #[test]
@@ -343,19 +375,19 @@ mod tests {
         ];
         let mut vm = T::new(&p);
         vm.push(7);
-        assert_eq!(vm.pop(), Some(999));
+        assert_eq!(vm.get_output(), Some(999));
 
         let mut vm = T::new(&p);
         vm.push(8);
-        assert_eq!(vm.pop(), Some(1000));
+        assert_eq!(vm.get_output(), Some(1000));
 
         let mut vm = T::new(&p);
         vm.push(100);
-        assert_eq!(vm.pop(), Some(1001));
+        assert_eq!(vm.get_output(), Some(1001));
 
         let mut vm = T::new(&p);
         vm.push(-100);
-        assert_eq!(vm.pop(), Some(999));
+        assert_eq!(vm.get_output(), Some(999));
     }
 
     #[test]
@@ -365,7 +397,7 @@ mod tests {
         ];
         let mut vm = T::new(&p);
         execute(&mut vm);
-        let output = vm.flush();
+        let output = vm.get_outputs();
         assert_eq!(output, p)
     }
 
@@ -373,7 +405,7 @@ mod tests {
     fn test_large_output_1() {
         let p = vec![1102, 34915192, 34915192, 7, 4, 7, 99, 0];
         let mut vm = T::new(&p);
-        let out = vm.pop().unwrap();
+        let out = vm.get_output().unwrap();
         assert_eq!(out, 1219070632396864);
     }
 
@@ -381,6 +413,6 @@ mod tests {
     fn test_large_output_2() {
         let p = vec![104, 1125899906842624, 99];
         let mut vm = T::new(&p);
-        assert_eq!(vm.pop(), Some(1125899906842624));
+        assert_eq!(vm.get_output(), Some(1125899906842624));
     }
 }

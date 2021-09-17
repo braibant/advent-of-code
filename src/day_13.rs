@@ -13,7 +13,7 @@ fn part1(program: &[i64]) {
     let mut vm = intcode::T::new(&program);
     intcode::execute(&mut vm);
     let mut part1 = 0;
-    let mut o = vm.flush();
+    let mut o = vm.get_outputs();
     o.reverse();
     while !o.is_empty() {
         let _x = o.pop().unwrap();
@@ -73,12 +73,12 @@ fn part2(program: &[i64]) {
     let mut ball_x = 0;
     let mut auto = false;
     crossterm::terminal::enable_raw_mode().unwrap();
-    while !(vm.is_halted() && vm.output.is_empty()) {
+    while !vm.is_halted() || 0 < vm.outputs() {
         draw(&state, score);
-        if 3 <= vm.output.len() {
-            let x = vm.pop().unwrap();
-            let y = vm.pop().unwrap();
-            let tile = vm.pop().unwrap();
+        if 3 <= vm.outputs() {
+            let x = vm.get_output().unwrap();
+            let y = vm.get_output().unwrap();
+            let tile = vm.get_output().unwrap();
             if x == -1 && y == 0 {
                 score = tile;
             } else {

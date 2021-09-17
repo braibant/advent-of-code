@@ -7,7 +7,7 @@ pub fn run(filename: &str) {
     let mut vm = intcode::T::new(&program);
     vm.push(1);
     intcode::execute(&mut vm);
-    for o in vm.output.iter() {
+    for o in vm.get_outputs().iter() {
         println!("OUTPUT: {}", o)
     }
 
@@ -15,7 +15,7 @@ pub fn run(filename: &str) {
     let mut vm = intcode::T::new(&program);
     vm.push(5);
     intcode::execute(&mut vm);
-    for o in vm.output.iter() {
+    for o in vm.get_output().iter() {
         println!("OUTPUT: {}", o)
     }
 }

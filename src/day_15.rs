@@ -165,7 +165,7 @@ pub fn run(filename: &str) {
     while !vm.is_halted() && !state.exploration_complete() {
         if let Some(dir) = state.next() {
             vm.push(dir as i64);
-            let out = vm.pop().unwrap();
+            let out = vm.get_output().unwrap();
             match out {
                 0 => state.wall(state.pos + dir.to_vector2()),
                 1 => state.move_to(state.pos + dir.to_vector2()),

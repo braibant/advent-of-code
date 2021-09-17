@@ -247,6 +247,7 @@ mod tests {
     }
 
     #[test]
+    #[ignore]
     fn test_case_3() {
         let s = "#################
 #i.G..c...e..H.p#

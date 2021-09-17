@@ -51,17 +51,8 @@ fn parse(s: &str) -> Option<Room> {
     })
 }
 
-fn read(vm: &mut intcode::T) -> String {
-    vm.execute();
-    let mut buf = String::new();
-    while let Some(c) = vm.pop() {
-        buf.push(c as u8 as char)
-    }
-    buf
-}
-
 fn room(vm: &mut intcode::T) -> Result<Room, String> {
-    let buf = read(vm);
+    let buf = vm.get_string();
     println!("{}", buf);
     match parse(&buf) {
         None => Err(buf),
@@ -223,13 +214,13 @@ pub fn run(filename: &str) {
     for (room_name, item) in items.iter().cloned() {
         goto(&mut state, &mut vm, &room_name.to_string());
         vm.push_str(&format!("take {}\n", item));
-        let buf = read(&mut vm);
+        let buf = vm.get_string();
         println!("{}", buf)
     }
     goto(&mut state, &mut vm, &"Security Checkpoint");
     for (_, item) in items.iter() {
         vm.push_str(&format!("drop {}\n", item));
-        let buf = read(&mut vm);
+        let buf = vm.get_string();
         println!("{}", buf)
     }
     let items: Vec<&str> = items.into_iter().map(|(_, item)| item).collect();
@@ -238,11 +229,11 @@ pub fn run(filename: &str) {
         for item in items.iter() {
             println!("$ take {}\n", item);
             vm.push_str(&format!("take {}\n", item));
-            let buf = read(&mut vm);
+            let buf = vm.get_string();
             println!("{}", buf)
         }
         push_direction(&mut vm, Direction::North);
-        let buf = read(&mut vm);
+        let buf = vm.get_string();
         if !(buf.contains("heavier") || buf.contains("lighter")) {
             println!("{}", buf);
             break;
@@ -250,7 +241,7 @@ pub fn run(filename: &str) {
             for item in items.iter() {
                 println!("$ drop {}\n", item);
                 vm.push_str(&format!("drop {}\n", item));
-                let buf = read(&mut vm);
+                let buf = vm.get_string();
                 println!("{}", buf)
             }
         }

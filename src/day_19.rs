@@ -8,7 +8,7 @@ fn part1(program: &intcode::Program) -> u64 {
             let mut vm = intcode::T::new(&program);
             vm.push(x);
             vm.push(y);
-            let out = vm.pop().unwrap();
+            let out = vm.get_output().unwrap();
             if out == 0 {
                 print!(".")
             } else if out == 1 {
@@ -55,7 +55,7 @@ fn inside_beam(t: &mut T, x: u32, y: u32) -> bool {
         let mut vm = intcode::T::new(program);
         vm.push(x as i64);
         vm.push(y as i64);
-        let out = vm.pop().unwrap();
+        let out = vm.get_output().unwrap();
         match out {
             1 => true,
             0 => false,
