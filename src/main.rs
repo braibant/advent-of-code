@@ -25,6 +25,7 @@ mod day_19;
 mod day_20;
 mod day_21;
 mod day_22;
+mod day_23;
 mod day_24;
 mod day_25;
 
@@ -63,6 +64,7 @@ fn main() {
             "20" => day_20::run(&args[2]),
             "21" => day_21::run(&args[2]),
             "22" => day_22::run(&args[2]),
+            "23" => day_23::run(&args[2]),
             "24" => day_24::run(&args[2]),
             "25" => day_25::run(&args[2]),
             s => {
