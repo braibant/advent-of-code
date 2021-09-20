@@ -3,6 +3,7 @@ use std::env;
 mod util;
 
 mod day_01;
+mod day_02;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -12,6 +13,7 @@ fn main() {
     } else {
         match args[1].as_str() {
             "01" => day_01::run(&args[2]),
+            "02" => day_02::run(&args[2]),
             s => {
                 println!("Unknown command: {}", s);
                 std::process::exit(1)
