@@ -6,3 +6,4 @@ authors = ["Thomas Braibant <thomas.braibant@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+scan_fmt = "0.2.6"
