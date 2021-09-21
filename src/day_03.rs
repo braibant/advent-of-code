@@ -87,6 +87,7 @@ pub fn run(filename: &str) {
     part2(&content);
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
     #[test]
