@@ -108,11 +108,11 @@ mod tests {
     use super::*;
     #[test]
     fn test_part_1() {
-        assert!(react('a', 'A'));
-        assert!(react('A', 'a'));
-        assert!(!react('b', 'a'));
-        assert!(!react('a', 'a'));
-        assert!(!react('B', 'B'));
+        assert!(matching('a', 'A'));
+        assert!(matching('A', 'a'));
+        assert!(!matching('b', 'a'));
+        assert!(!matching('a', 'a'));
+        assert!(!matching('B', 'B'));
         let s = "dabAcCaCBAcCcaDA";
         assert_eq!(part1(s), 10);
         let s = "abBA";
