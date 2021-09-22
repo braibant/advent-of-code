@@ -8,13 +8,6 @@ struct T {
 }
 
 impl T {
-    fn before(&self, x: char) -> Vec<char> {
-        match self.happens_before.get(&x) {
-            None => Vec::new(),
-            Some(v) => v.clone(),
-        }
-    }
-
     fn roots(&self) -> Vec<char> {
         self.universe
             .iter()
@@ -224,7 +217,7 @@ pub fn run(filename: &str) {
 mod tests {
     use super::*;
 
-    const example: &str = "Step C must be finished before step A can begin.
+    const EXAMPLE: &str = "Step C must be finished before step A can begin.
 Step C must be finished before step F can begin.
 Step A must be finished before step B can begin.
 Step A must be finished before step D can begin.
@@ -234,13 +227,13 @@ Step F must be finished before step E can begin.";
 
     #[test]
     fn test_part1() {
-        let t = parse(example);
+        let t = parse(EXAMPLE);
         assert_eq!(part1(&t), "CABDFE");
     }
 
     #[test]
     fn test_part2() {
-        let t = parse(example);
+        let t = parse(EXAMPLE);
         assert_eq!(part2(&t, 2, 0), 15);
     }
 }
