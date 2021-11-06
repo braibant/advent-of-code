@@ -3,7 +3,7 @@ use std::collections::HashSet;
 fn parse(s: &str) -> Vec<i64> {
     s.split('\n')
         .filter_map(|l| {
-            if l == "" {
+            if l.is_empty() {
                 None
             } else {
                 let i: i64 = l

@@ -20,10 +20,7 @@ fn scan_id(id: &str) -> Scan {
             thrice = true
         }
     }
-    Scan {
-        twice: twice,
-        thrice: thrice,
-    }
+    Scan { twice, thrice }
 }
 
 fn part1(s: &str) -> i64 {

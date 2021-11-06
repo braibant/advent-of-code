@@ -22,7 +22,9 @@ fn parse_claim(s: &str) -> Claim {
 }
 
 fn parse(s: &str) -> impl Iterator<Item = Claim> + '_ {
-    s.split('\n').filter(|&l| l != "").map(|l| parse_claim(l))
+    s.split('\n')
+        .filter(|&l| !l.is_empty())
+        .map(|l| parse_claim(l))
 }
 
 fn iter_claims<F>(s: &str, mut f: F)

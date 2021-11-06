@@ -82,7 +82,7 @@ fn part1(mut state: Vec<Star>) {
                 print!(" ")
             }
         }
-        print!("\n")
+        println!()
     }
 }
 

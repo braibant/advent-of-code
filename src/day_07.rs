@@ -180,24 +180,22 @@ fn part2(t: &T, n: usize, speed: usize) -> usize {
     loop {
         if state.ready.is_empty() && state.workers.iter().all(|j| j.is_none()) {
             break;
+        } else if state.available_workers() == 0 || state.ready.is_empty() {
+            // The only thing we can do is wait for a worker to complete.
+            let next_completion = state.next_completion().unwrap();
+            let done = state.advance_clock(next_completion + 1);
+            let mut newly_ready = Vec::new();
+            for d in done.iter() {
+                newly_ready.extend(state.complete_job(*d))
+            }
+            state.ready.append(&mut newly_ready)
         } else {
-            if state.available_workers() == 0 || state.ready.is_empty() {
-                // The only thing we can do is wait for a worker to complete.
-                let next_completion = state.next_completion().unwrap();
-                let done = state.advance_clock(next_completion + 1);
-                let mut newly_ready = Vec::new();
-                for d in done.iter() {
-                    newly_ready.extend(state.complete_job(*d))
-                }
-                state.ready.append(&mut newly_ready)
-            } else {
-                // We have some jobs to allocate to workers, and some workers
-                for i in 0..state.workers.len() {
-                    if state.workers[i].is_none() {
-                        if let Some(id) = state.ready.pop() {
-                            let finish_at = state.clock + speed + (((id as u8) - b'A') as usize);
-                            state.workers[i] = Some(Job { finish_at, id })
-                        }
+            // We have some jobs to allocate to workers, and some workers
+            for i in 0..state.workers.len() {
+                if state.workers[i].is_none() {
+                    if let Some(id) = state.ready.pop() {
+                        let finish_at = state.clock + speed + (((id as u8) - b'A') as usize);
+                        state.workers[i] = Some(Job { finish_at, id })
                     }
                 }
             }
