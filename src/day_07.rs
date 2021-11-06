@@ -22,16 +22,16 @@ fn parse(s: &str) -> T {
     let mut happens_after = HashMap::new();
     let mut universe = HashSet::new();
     for line in s.split('\n') {
-        if line != "" {
+        if !line.is_empty() {
             // Step S must be finished before step P can begin.
             // I.e. P after S, S before P
             // I.e. happens before P = [S], happens after S = [P]
             let words: Vec<_> = line.split(' ').collect();
             let before = words[1].chars().next().unwrap();
             let after = words[7].chars().next().unwrap();
-            let entry = happens_before.entry(after).or_insert(Vec::new());
+            let entry = happens_before.entry(after).or_insert_with(Vec::new);
             entry.push(before);
-            let entry = happens_after.entry(before).or_insert(Vec::new());
+            let entry = happens_after.entry(before).or_insert_with(Vec::new);
             entry.push(after);
             universe.insert(before);
             universe.insert(after);
@@ -125,10 +125,7 @@ impl<'a> State<'a> {
     fn next_completion(&self) -> Option<usize> {
         self.workers
             .iter()
-            .filter_map(|job_maybe| match job_maybe {
-                None => None,
-                Some(job) => Some(job.finish_at),
-            })
+            .filter_map(|job_maybe| job_maybe.as_ref().map(|job| job.finish_at))
             .min()
     }
 

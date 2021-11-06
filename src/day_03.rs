@@ -13,7 +13,7 @@ struct Claim {
 fn parse_claim(s: &str) -> Claim {
     let (id, posx, posy, sizex, sizey) =
         scan_fmt!(s, "#{d} @ {d},{d}: {d}x{d}", u32, i32, i32, i32, i32)
-            .expect(&format!("Could not parse '{}'", s));
+            .unwrap_or_else(|_| panic!("Could not parse'{}'", s));
     Claim {
         id,
         pos: Vector2::new(posx, posy),
@@ -63,7 +63,7 @@ fn part2(s: &str) {
     let mut ids = HashSet::new();
     let f = |id, v| {
         ids.insert(id);
-        let entry = claims.entry(v).or_insert(HashSet::new());
+        let entry = claims.entry(v).or_insert_with(HashSet::new);
         entry.insert(id);
     };
     iter_claims(s, f);
@@ -83,8 +83,8 @@ fn part2(s: &str) {
 }
 
 pub fn run(filename: &str) {
-    let content =
-        std::fs::read_to_string(filename).expect(&format!("Could not read file '{}'", filename));
+    let content = std::fs::read_to_string(filename)
+        .unwrap_or_else(|_| panic!("Could not read file '{}'", filename));
     println!("{}", part1(&content));
     part2(&content);
 }

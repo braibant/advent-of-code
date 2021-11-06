@@ -8,7 +8,7 @@ fn parse(s: &str) -> Vec<i64> {
             } else {
                 let i: i64 = l
                     .parse::<i64>()
-                    .expect(&format!("Could not parse line '{}' as number", l));
+                    .unwrap_or_else(|_| panic!("Could not parse line '{}' as number", l));
                 Some(i)
             }
         })
@@ -16,7 +16,7 @@ fn parse(s: &str) -> Vec<i64> {
 }
 
 fn part1(input: &[i64]) -> i64 {
-    input.iter().fold(0, |acc, i| acc + i)
+    input.iter().sum()
 }
 
 fn part2(input: &[i64]) -> i64 {

@@ -103,7 +103,7 @@ impl T {
                     }
                 }
             }
-            b.push_str("\t");
+            b.push('\t');
             b.push_str(&hps.join(", "));
             b.push('\n');
         }
@@ -183,7 +183,7 @@ impl T {
                 todo.append(&mut next);
             }
         }
-        return Vector2::new(0, 0);
+        Vector2::new(0, 0)
     }
 
     fn attack(&mut self, pos: Position, unit: Unit) {
@@ -231,7 +231,7 @@ impl T {
                     Some(Some(u1)) => {
                         if u1.last_move < self.rounds {
                             u1.last_move = self.rounds;
-                            Some(u1.clone())
+                            Some(*u1)
                         } else {
                             None
                         }
@@ -245,7 +245,7 @@ impl T {
                             // If we cannot a find a target, we compute the score and break
                             let hit_points: i32 = self.units().iter().map(|u| u.hit_points).sum();
                             self.score = Some((self.rounds, hit_points));
-                            return ();
+                            return;
                         }
                         let in_range_of_targets: HashSet<_> = targets
                             .iter()
@@ -319,7 +319,7 @@ fn part1(mut t: T, debug: bool) -> (i32, i32) {
                 if debug {
                     println!("Round {}", t.rounds);
                     t.print();
-                    println!("");
+                    println!();
                 }
                 t.step()
             }

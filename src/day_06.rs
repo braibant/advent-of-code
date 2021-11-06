@@ -5,7 +5,7 @@ use std::collections::HashMap;
 fn parse(s: &str) -> Vec<Vector2<i32>> {
     s.split('\n')
         .filter_map(|line| {
-            if line == "" {
+            if line.is_empty() {
                 None
             } else {
                 let (x, y) = scan_fmt!(line, "{}, {}", i32, i32).unwrap();
@@ -52,9 +52,9 @@ fn nearest(points: &[Vector2<i32>], p: Vector2<i32>) -> Option<Vector2<i32>> {
             let (pa, da) = distances[0];
             let (_pb, db) = distances[1];
             if da == db {
-                return None;
+                None
             } else {
-                return Some(*pa);
+                Some(*pa)
             }
         }
     }

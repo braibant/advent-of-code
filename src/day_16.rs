@@ -1,8 +1,7 @@
 use std::collections::HashMap;
 use std::collections::HashSet;
-use std::ops::{Add, Index};
 
-type REG = u64;
+type RegType = u64;
 
 #[derive(Copy, Clone)]
 enum Instr {
@@ -21,6 +20,7 @@ enum Mode {
     Register,
 }
 
+#[allow(dead_code)]
 #[derive(Copy, Clone)]
 struct Op {
     mnemonic: &'static str,
@@ -140,15 +140,15 @@ const ALL: [Op; 16] = [
 
 #[derive(PartialEq, Debug)]
 struct Sample {
-    before: [REG; 4],
-    after: [REG; 4],
-    opcode: REG,
-    a: REG,
-    b: REG,
-    c: REG,
+    before: [RegType; 4],
+    after: [RegType; 4],
+    opcode: RegType,
+    a: RegType,
+    b: RegType,
+    c: RegType,
 }
 
-fn value(value: REG, mode: Mode, registers: &[REG; 4]) -> Option<REG> {
+fn value(value: RegType, mode: Mode, registers: &[RegType; 4]) -> Option<RegType> {
     match mode {
         Mode::Register => {
             if value < 4 {
@@ -161,8 +161,14 @@ fn value(value: REG, mode: Mode, registers: &[REG; 4]) -> Option<REG> {
     }
 }
 
-fn eval(op: &Op, a: REG, b: REG, c: REG, registers: &[REG; 4]) -> Option<[REG; 4]> {
-    let mut registers = registers.clone();
+fn eval(
+    op: &Op,
+    a: RegType,
+    b: RegType,
+    c: RegType,
+    registers: &[RegType; 4],
+) -> Option<[RegType; 4]> {
+    let mut registers = *registers;
     let a = value(a, op.a, &registers)?;
     let b = value(b, op.b, &registers);
     let val = match op.instruction {
@@ -184,7 +190,7 @@ fn eval(op: &Op, a: REG, b: REG, c: REG, registers: &[REG; 4]) -> Option<[REG; 4
         }
         Instr::Eq => {
             let b = b?;
-            if (a == b) {
+            if a == b {
                 Some(1)
             } else {
                 Some(0)
@@ -192,7 +198,7 @@ fn eval(op: &Op, a: REG, b: REG, c: REG, registers: &[REG; 4]) -> Option<[REG; 4
         }
         Instr::Gt => {
             let b = b?;
-            if (a > b) {
+            if a > b {
                 Some(1)
             } else {
                 Some(0)
@@ -206,31 +212,27 @@ fn eval(op: &Op, a: REG, b: REG, c: REG, registers: &[REG; 4]) -> Option<[REG; 4
 
 fn compatible_codes(sample: &Sample) -> HashSet<usize> {
     (0..16)
-        .filter_map(|i| {
-            if eval(&ALL[i], sample.a, sample.b, sample.c, &sample.before) == Some(sample.after) {
-                Some(i)
-            } else {
-                None
-            }
+        .filter(|i| {
+            eval(&ALL[*i], sample.a, sample.b, sample.c, &sample.before) == Some(sample.after)
         })
         .collect()
 }
 
 use scan_fmt::scan_fmt;
-fn parse_registers(s: &str) -> [REG; 4] {
-    let (a, b, c, d) = scan_fmt!(s, "[{}, {}, {}, {}]", REG, REG, REG, REG).unwrap();
-    [a, b, c, d]
+fn parse_registers(s: &str) -> [RegType; 4] {
+    let tuple = scan_fmt!(s, "[{}, {}, {}, {}]", RegType, RegType, RegType, RegType).unwrap();
+    [tuple.0, tuple.1, tuple.2, tuple.3]
 }
 
-fn parse_instruction(s: &str) -> (REG, REG, REG, REG) {
-    scan_fmt!(s, "{} {} {} {}", REG, REG, REG, REG).unwrap()
+fn parse_instruction(s: &str) -> (RegType, RegType, RegType, RegType) {
+    scan_fmt!(s, "{} {} {} {}", RegType, RegType, RegType, RegType).unwrap()
 }
 
 struct DInstr {
     op: Op,
-    a: REG,
-    b: REG,
-    c: REG,
+    a: RegType,
+    b: RegType,
+    c: RegType,
 }
 
 fn decode_instruction(s: &str, mapping: &HashMap<usize, usize>) -> DInstr {
@@ -292,8 +294,8 @@ fn mapping(samples: &[Sample]) -> HashMap<usize, usize> {
             .iter_mut()
             .for_each(|(_, c)| c.retain(|x| !used.contains(x)));
 
-        cypher_to_plain_candidates.sort_by_key(|(cypher, candidates)| -(candidates.len() as i32));
-        let (cypher, mut candidates) = cypher_to_plain_candidates.pop().unwrap();
+        cypher_to_plain_candidates.sort_by_key(|(_cypher, candidates)| -(candidates.len() as i32));
+        let (cypher, candidates) = cypher_to_plain_candidates.pop().unwrap();
         assert!(candidates.len() == 1);
         let plain = candidates.into_iter().next().unwrap();
         cypher_to_plain.insert(cypher, plain);
@@ -303,7 +305,7 @@ fn mapping(samples: &[Sample]) -> HashMap<usize, usize> {
     cypher_to_plain
 }
 
-fn execute(program: &[DInstr]) -> [REG; 4] {
+fn execute(program: &[DInstr]) -> [RegType; 4] {
     let mut regs = [0, 0, 0, 0];
     for i in program.iter() {
         regs = eval(&i.op, i.a, i.b, i.c, &regs).unwrap()

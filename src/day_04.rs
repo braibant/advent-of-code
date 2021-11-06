@@ -15,7 +15,7 @@ struct LogEntry {
 }
 
 fn parse_log_entry(s: &str) -> Option<LogEntry> {
-    if s == "" {
+    if s.is_empty() {
         None
     } else {
         let words: Vec<_> = s.split(' ').collect();
@@ -71,7 +71,7 @@ impl T {
         // The concrete instance given has a sleep-guard-wakeup sequence. We
         // choose to implement the wakeup as a no-op if the guard that took his
         // shift has not fallen asleep yet.
-        if !self.sleeping.is_none() {
+        if self.sleeping.is_some() {
             let mut i = self.sleeping.unwrap();
             while i != timestamp {
                 self.sleeping_at[i as usize] += 1;
@@ -105,7 +105,7 @@ fn build_schedule(log: &[LogEntry]) -> HashMap<u32, T> {
                     }
                     guards.insert(idx, t);
                 };
-                let t = guards.remove(&i).unwrap_or(T::new(i));
+                let t = guards.remove(&i).unwrap_or_else(|| T::new(i));
                 guard = Some((i, t));
             }
             Event::Sleep => {

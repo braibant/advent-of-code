@@ -16,7 +16,7 @@ fn parse_rule(s: &str) -> Rule {
             acc
         }
     });
-    let rhs = s.chars().last().unwrap() == '#';
+    let rhs = s.ends_with('#');
     Rule { lhs, rhs }
 }
 
@@ -33,7 +33,7 @@ impl T {
                 return true;
             }
         }
-        return false;
+        false
     }
 
     fn initialize(v: &[bool]) -> T {
@@ -42,14 +42,14 @@ impl T {
             .enumerate()
             .filter_map(|(i, &b)| if b { Some(i as i64) } else { None })
             .collect();
-        plants.sort();
+        plants.sort_unstable();
         T { plants, offset: 0 }
     }
 
     fn new(v: &[i64]) -> T {
         let &offset = v.iter().min().unwrap_or(&0);
         let mut plants: Vec<_> = v.iter().map(|i| i - offset).collect();
-        plants.sort();
+        plants.sort_unstable();
         T { plants, offset }
     }
 }
@@ -57,7 +57,7 @@ impl T {
 fn mask(t: &T, i: i64) -> u8 {
     let mut acc = 0;
     for di in -2..3 {
-        acc = acc << 1;
+        acc <<= 1;
         acc += t.get(i + di) as u8
     }
     acc
@@ -109,7 +109,7 @@ fn part2(initial_state: &[bool], rules: &HashMap<u8, bool>) -> i64 {
         count += 1;
     };
     if step2 == step1 + 1 {
-        let final_offset = (offset2 - offset1) * (50_000_000_000 as i64 - step2 as i64) + offset2;
+        let final_offset = (offset2 - offset1) * (50_000_000_000_i64 - step2 as i64) + offset2;
         state.plants.iter().map(|i| i + final_offset).sum()
     } else {
         panic!()
@@ -124,7 +124,7 @@ pub fn run(filename: &str) {
     let rules: HashMap<_, _> = contents[1]
         .split('\n')
         .filter_map(|r| {
-            if r == "" {
+            if r.is_empty() {
                 None
             } else {
                 let Rule { lhs, rhs } = parse_rule(r);

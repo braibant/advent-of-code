@@ -18,7 +18,13 @@ fn parse_line(s: &str) -> Star {
 
 fn parse(s: &str) -> Vec<Star> {
     s.split('\n')
-        .filter_map(|l| if l != "" { Some(parse_line(l)) } else { None })
+        .filter_map(|l| {
+            if !l.is_empty() {
+                Some(parse_line(l))
+            } else {
+                None
+            }
+        })
         .collect()
 }
 
