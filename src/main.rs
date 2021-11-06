@@ -15,6 +15,8 @@ mod day_10;
 mod day_11;
 mod day_12;
 mod day_13;
+mod day_14;
+mod day_15;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -36,6 +38,8 @@ fn main() {
             "11" => day_11::run(&args[2]),
             "12" => day_12::run(&args[2]),
             "13" => day_13::run(&args[2]),
+            "14" => day_14::run(&args[2]),
+            "15" => day_15::run(&args[2]),
             s => {
                 println!("Unknown command: {}", s);
                 std::process::exit(1)
