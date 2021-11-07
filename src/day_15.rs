@@ -398,7 +398,7 @@ Elves win with 982 total hit points left
 Outcome: 37 * 982 = 36334";
 
     #[test]
-    fn test_E1() {
+    fn test_e1() {
         let t = parse_expect_test(E1);
         assert_eq!(part1(t, true), (37, 982));
     }
@@ -416,7 +416,7 @@ Elves win with 859 total hit points left
 Outcome: 46 * 859 = 39514";
 
     #[test]
-    fn test_E2() {
+    fn test_e2() {
         let t = parse_expect_test(E2);
         assert_eq!(part1(t, false), (46, 859));
     }
@@ -434,7 +434,7 @@ Goblins win with 793 total hit points left
 Outcome: 35 * 793 = 27755";
 
     #[test]
-    fn test_E3() {
+    fn test_e3() {
         let t = parse_expect_test(E3);
         assert_eq!(part1(t, false), (35, 793));
     }
@@ -451,7 +451,7 @@ Goblins win with 536 total hit points left
 Outcome: 54 * 536 = 28944";
 
     #[test]
-    fn test_E4() {
+    fn test_e4() {
         let t = parse_expect_test(E4);
         assert_eq!(part1(t, false), (54, 536));
     }
@@ -471,7 +471,7 @@ Goblins win with 937 total hit points left
 Outcome: 20 * 937 = 18740";
 
     #[test]
-    fn test_E5() {
+    fn test_e5() {
         let t = parse_expect_test(E5);
         assert_eq!(part1(t, false), (20, 937));
     }
@@ -510,7 +510,7 @@ Outcome: 20 * 937 = 18740";
 
     #[test]
     fn test_target_ordering_1() {
-        let mut t = parse(E6);
+        let t = parse(E6);
         let targets = t.targets(Species::Elf);
         let d = t.find_path_to_closest_target(Vector2::new(1, 1), &targets);
         assert_eq!(d, R);
@@ -526,7 +526,7 @@ Outcome: 20 * 937 = 18740";
 
     #[test]
     fn test_target_ordering_2() {
-        let mut t = parse(E7);
+        let t = parse(E7);
         let targets = t.targets(Species::Elf);
         let d = t.find_path_to_closest_target(Vector2::new(2, 1), &targets);
         assert_eq!(d, R);

@@ -8,8 +8,12 @@ check:
 	cargo clippy --locked -- -D warnings
 
 # Runs all dates 
-run:
+all:
 	./run.sh
+
+# Run a single date
+run target:
+	cargo run {{target}} data/day_{{target}}.txt
 
 
 build:

@@ -25,14 +25,28 @@ where
     }
 }
 
-pub fn bounding_box<T>(points: &[Vector2<T>]) -> (Vector2<T>, Vector2<T>)
+use core::borrow::Borrow;
+
+pub fn bounding_box<T, I>(mut it: I) -> Option<(Vector2<T>, Vector2<T>)>
 where
+    I: Iterator,
+    I::Item: Borrow<Vector2<T>>,
     T: Ord + Copy,
 {
-    let minx = points.iter().map(|p| p.x).min().unwrap();
-    let miny = points.iter().map(|p| p.y).min().unwrap();
-    let maxx = points.iter().map(|p| p.x).max().unwrap();
-    let maxy = points.iter().map(|p| p.y).max().unwrap();
-
-    (Vector2::new(minx, miny), Vector2::new(maxx, maxy))
+    match it.next() {
+        None => None,
+        Some(p) => {
+            let mut minx = p.borrow().x;
+            let mut maxx = p.borrow().x;
+            let mut miny = p.borrow().y;
+            let mut maxy = p.borrow().y;
+            for p in it {
+                minx = std::cmp::min(minx, p.borrow().x);
+                miny = std::cmp::min(miny, p.borrow().y);
+                maxx = std::cmp::max(maxx, p.borrow().x);
+                maxy = std::cmp::max(maxy, p.borrow().y);
+            }
+            Some((Vector2::new(minx, miny), Vector2::new(maxx, maxy)))
+        }
+    }
 }

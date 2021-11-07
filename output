@@ -47,6 +47,19 @@ ADEFKLBVJQWUXCNGORTMYSIHPZ
  #   #   #   #   #    #  #       #    #  #   #   #       #      
   ###     ###    #    #  ######  #    #  #    #  #       #      
                                                                 
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
 
 # 11
 Average power level: -0.5214444444444445
@@ -104,4 +117,7 @@ ap: 16, rounds: 42, hitpoints: 1247, score: 52374
 # 16
 612
 [485, 3, 6, 485]
+
+# 17
+Vector2 { x: 413, y: 6 } Vector2 { x: 602, y: 1574 }
 

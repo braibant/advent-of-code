@@ -77,7 +77,7 @@ fn part1(mut state: Vec<Star>) {
         }
     }
     let positions: Vec<_> = best_state.iter().map(|s| s.position).collect();
-    let (min, max) = crate::util::vector2::bounding_box(&positions);
+    let (min, max) = crate::util::vector2::bounding_box(positions.iter()).unwrap();
     let positions: HashSet<_> = best_state.iter().map(|s| s.position).collect();
     for y in (min.y - 1)..(max.y + 2) {
         for x in (min.x - 1)..(max.x + 2) {
