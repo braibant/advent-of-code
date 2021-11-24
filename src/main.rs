@@ -1,5 +1,8 @@
+#[macro_use]
+extern crate prettytable;
 use std::env;
 
+mod asm;
 mod util;
 
 mod day_01;
@@ -20,6 +23,7 @@ mod day_15;
 mod day_16;
 mod day_17;
 mod day_18;
+mod day_19;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -46,6 +50,7 @@ fn main() {
             "16" => day_16::run(&args[2]),
             "17" => day_17::run(&args[2]),
             "18" => day_18::run(&args[2]),
+            "19" => day_19::run(&args[2]),
             s => {
                 println!("Unknown command: {}", s);
                 std::process::exit(1)

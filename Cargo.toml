@@ -8,3 +8,4 @@ edition = "2018"
 [dependencies]
 scan_fmt = "0.2.6"
 chrono = "0.4"
+prettytable-rs = "0.8"
