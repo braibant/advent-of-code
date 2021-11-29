@@ -1,49 +1,5 @@
-use crate::asm::Op;
-#[macro_use]
-use prettytable;
+use crate::asm::{instr_to_string, parse, Op, Program};
 use std::collections::HashSet;
-
-type Program = Vec<(&'static Op, u64, u64, u64)>;
-fn parse(s: &str) -> (usize, Program) {
-    let mut ip = None;
-    let mut program: Program = Vec::new();
-    for line in s.split('\n').filter(|l| !l.is_empty()) {
-        if line.starts_with("#ip ") {
-            ip = Some(line.strip_prefix("#ip ").unwrap().parse().unwrap());
-        } else {
-            let elements: Vec<_> = line.split(' ').collect();
-            let op = crate::asm::ALL
-                .iter()
-                .find(|op| op.mnemonic.to_lowercase() == elements[0])
-                .unwrap();
-            let a = elements[1].parse().unwrap();
-            let b = elements[2].parse().unwrap();
-            let c = elements[3].parse().unwrap();
-            program.push((op, a, b, c));
-        }
-    }
-    (ip.unwrap(), program)
-}
-
-fn instr_to_string(instr: (&'static Op, u64, u64, u64)) -> String {
-    fn arg(i: u64, m: crate::asm::Mode) -> String {
-        match m {
-            crate::asm::Mode::Immediate => format!("{:2}", i),
-            crate::asm::Mode::Register => format!("r{}", i),
-            crate::asm::Mode::Ignore => format!("  "),
-        }
-    }
-    let mut s = String::new();
-    let op = instr.0;
-    s.push_str(op.mnemonic);
-    s.push_str(" ");
-    s.push_str(&arg(instr.1, op.a));
-    s.push_str(" ");
-    s.push_str(&arg(instr.2, op.b));
-    s.push_str(" ");
-    s.push_str(&format!("r{}", instr.3));
-    s
-}
 
 fn value(
     value: crate::asm::RegType,
@@ -65,7 +21,7 @@ fn value(
 
 fn eval(registers: &[u64; 6], instr: (&'static Op, u64, u64, u64)) -> Option<[u64; 6]> {
     use crate::asm::Instr;
-    use crate::asm::Instr::*;
+
     let mut registers = *registers;
     let (op, a, b, c) = instr;
     let a = value(a, op.a, &registers)?;
@@ -164,6 +120,7 @@ impl T {
         }
     }
 
+    #[allow(dead_code)]
     fn to_table(&self) -> prettytable::Table {
         use prettytable::{Cell, Row, Table};
         let mut table = Table::new();
@@ -207,7 +164,7 @@ fn part1(text: &Program, ip: usize) -> u64 {
     t.registers[0]
 }
 
-fn part2(text: &Program, ip: usize) -> u64 {
+fn part2(_text: &Program, _ip: usize) -> u64 {
     // let mut t = T::new(text, ip);
     // t.registers[0] = 1;
     // while !t.halted {
@@ -232,8 +189,8 @@ fn part2(text: &Program, ip: usize) -> u64 {
 pub fn run(filename: &str) {
     let contents = std::fs::read_to_string(filename).unwrap();
     let (ip, text) = parse(&contents);
-    println!("{:?}", part1(&text, ip));
-    println!("{:?}", part2(&text, ip));
+    println!("{:?}", part1(&text, ip.unwrap()));
+    println!("{:?}", part2(&text, ip.unwrap()));
 }
 
 #[cfg(test)]
@@ -251,6 +208,6 @@ seti 9 0 5";
     #[test]
     fn test_example1() {
         let (ip, text) = parse(E1);
-        assert_eq!(part1(&text, ip), 6)
+        assert_eq!(part1(&text, ip.unwrap()), 6)
     }
 }

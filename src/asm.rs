@@ -135,3 +135,48 @@ pub const EQRR: Op = Op {
 pub const ALL: [Op; 16] = [
     ADDR, ADDI, MULR, MULI, ANDR, ANDI, ORR, ORI, SETR, SETI, GTIR, GTRI, GTRR, EQIR, EQRI, EQRR,
 ];
+
+pub type Program = Vec<(&'static Op, u64, u64, u64)>;
+
+pub fn parse(s: &str) -> (Option<usize>, Program) {
+    let mut ip = None;
+    let mut program: Program = Vec::new();
+    for line in s.split('\n').filter(|l| !l.is_empty()) {
+        if line.starts_with("#ip ") {
+            if let Some(l) = line.strip_prefix("#ip ") {
+                ip = Some(l.parse().unwrap());
+            }
+        } else {
+            let elements: Vec<_> = line.split(' ').collect();
+            let op = crate::asm::ALL
+                .iter()
+                .find(|op| op.mnemonic.to_lowercase() == elements[0])
+                .unwrap();
+            let a = elements[1].parse().unwrap();
+            let b = elements[2].parse().unwrap();
+            let c = elements[3].parse().unwrap();
+            program.push((op, a, b, c));
+        }
+    }
+    (ip, program)
+}
+
+pub fn instr_to_string(instr: (&'static Op, u64, u64, u64)) -> String {
+    fn arg(i: u64, m: crate::asm::Mode) -> String {
+        match m {
+            crate::asm::Mode::Immediate => format!("{:2}", i),
+            crate::asm::Mode::Register => format!("r{}", i),
+            crate::asm::Mode::Ignore => format!("  "),
+        }
+    }
+    let mut s = String::new();
+    let op = instr.0;
+    s.push_str(op.mnemonic);
+    s.push_str(" ");
+    s.push_str(&arg(instr.1, op.a));
+    s.push_str(" ");
+    s.push_str(&arg(instr.2, op.b));
+    s.push_str(" ");
+    s.push_str(&format!("r{}", instr.3));
+    s
+}

@@ -42,7 +42,7 @@ impl T {
         for dx in -1..=1_i32 {
             for dy in -1..=1_i32 {
                 if dx != 0 || dy != 0 {
-                    match self.get((pos + Vector2::new(dx, dy))) {
+                    match self.get(pos + Vector2::new(dx, dy)) {
                         None => {}
                         Some(Tile::Lumberyard) => adj.lumberyards += 1,
                         Some(Tile::Trees) => adj.trees += 1,
