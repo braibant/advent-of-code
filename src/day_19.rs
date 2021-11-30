@@ -1,5 +1,4 @@
-use crate::asm::{instr_to_string, parse, Op, Program, T};
-use std::collections::HashSet;
+use crate::asm::{parse, Program, T};
 
 fn part1(text: &Program, ip: usize) -> u64 {
     let mut t = T::new(text, ip);

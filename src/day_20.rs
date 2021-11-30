@@ -1,8 +1,8 @@
 use crate::util::direction::Direction;
 use crate::util::vector2::Vector2;
 use std::collections::HashMap;
-use std::collections::VecDeque;
 use std::collections::HashSet;
+use std::collections::VecDeque;
 
 type Position = Vector2<i32>;
 
@@ -31,7 +31,6 @@ impl T {
     }
 }
 
-use nom;
 use nom::multi::separated_list0;
 use nom::Finish;
 use nom::IResult;
@@ -87,7 +86,6 @@ struct State {
 struct Positions(HashSet<Position>);
 
 impl Positions {
-
     fn new() -> Self {
         Positions(HashSet::new())
     }
