@@ -1,0 +1,6 @@
+2018/Cargo.lock
+2018/target/
+2018/workspace.code-workspace
+2021/.vscode/
+2021/aoc2021/__pycache__/
+2021/poetry.lock
