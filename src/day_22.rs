@@ -1,5 +1,5 @@
 use std::{
-    collections::{BinaryHeap, HashMap, VecDeque},
+    collections::{BinaryHeap, HashMap},
     hash::Hash,
 };
 struct T {
@@ -55,7 +55,6 @@ impl T {
 
     fn neighbors(&mut self, n: N) -> Vec<(i64, N)> {
         let mut acc = Vec::new();
-        let current = self.soil(n.x, n.y);
         for (dx, dy) in [(0, 1), (0, -1), (1, 0), (-1, 0)] {
             let x = n.x + dx;
             let y = n.y + dy;
