@@ -1,0 +1,9 @@
+# just manual: https://github.com/casey/just/#readme
+
+_default:
+    @just --list
+
+# Run a single date
+run target:
+	python3 -m aoc2021 {{target}} data/day_{{target}}.txt
+
