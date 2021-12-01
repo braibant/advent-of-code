@@ -13,7 +13,7 @@ all:
 
 # Run a single date
 run target:
-	cargo run {{target}} data/day_{{target}}.txt
+	cargo run --release {{target}} data/day_{{target}}.txt
 
 
 build:

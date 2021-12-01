@@ -1,4 +1,4 @@
-#[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
+#[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, Ord, PartialOrd)]
 pub struct Vector3<T> {
     pub x: T,
     pub y: T,
