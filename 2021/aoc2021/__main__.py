@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 
 import aoc2021.day_01 as day_01
+import aoc2021.day_02 as day_02
 
 
 def read_file(filename):
@@ -20,6 +21,8 @@ def main():
     content = read_file(filename)
     if day == "01":
         day_01.run(content)
+    if day == "02":
+        day_02.run(content)
 
 
 if __name__ == "__main__":

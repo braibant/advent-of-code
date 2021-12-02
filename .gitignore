@@ -4,3 +4,5 @@
 2021/.vscode/
 2021/aoc2021/__pycache__/
 2021/poetry.lock
+
+2021/tests/__pycache__
