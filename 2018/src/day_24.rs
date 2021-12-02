@@ -309,6 +309,7 @@ mod tests {
     #[test]
     fn test0() {
         let e = parse_group(
+            Side::Infection,
             1,
             "18 units each with 729 hit points (weak to fire; immune to cold, slashing)
  with an attack that does 8 radiation damage at initiative 10",
