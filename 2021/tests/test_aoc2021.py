@@ -1,6 +1,7 @@
 from aoc2021 import __version__
 import aoc2021.day_02 as day_02
 import aoc2021.day_04 as day_04
+import aoc2021.day_06 as day_06
 
 
 def test_version():
@@ -52,3 +53,8 @@ def test_day_04_part1():
 
     (nums, grids) = day_04.parse(sample)
     assert day_04.part1(nums, grids) == 4512
+
+
+def test_day_06_part1():
+    sample = list(map(int, "3,4,3,1,2".split(",")))
+    assert day_06.part1(sample) == 5934
