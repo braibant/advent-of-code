@@ -2,6 +2,7 @@ from aoc2021 import __version__
 import aoc2021.day_02 as day_02
 import aoc2021.day_04 as day_04
 import aoc2021.day_06 as day_06
+import aoc2021.day_07 as day_07
 
 
 def test_version():
@@ -58,3 +59,11 @@ def test_day_04_part1():
 def test_day_06_part1():
     sample = list(map(int, "3,4,3,1,2".split(",")))
     assert day_06.part1(sample) == 5934
+
+
+def test_day_07_part2():
+    positions = list(map(int, "16,1,2,0,4,2,7,1,2,14".split(",")))
+    assert day_07.cost_sum(16 - 5) == 66
+    assert day_07.cost_sum(14 - 5) == 45
+    assert day_07.costn(day_07.cost_sum, positions, 5) == 168
+    assert day_07.min_cost(day_07.cost_sum, positions) == 168
