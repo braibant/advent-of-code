@@ -8,6 +8,7 @@ import aoc2021.day_04 as day_04
 import aoc2021.day_05 as day_05
 import aoc2021.day_06 as day_06
 import aoc2021.day_07 as day_07
+import aoc2021.day_08 as day_08
 
 
 def read_file(filename):
@@ -38,6 +39,8 @@ def main():
         day_06.run(content)
     if day == "07":
         day_07.run(content)
+    if day == "08":
+        day_08.run(content)
 
 
 if __name__ == "__main__":
