@@ -12,6 +12,9 @@ import aoc2021.day_08 as day_08
 import aoc2021.day_09 as day_09
 import aoc2021.day_10 as day_10
 import aoc2021.day_11 as day_11
+import aoc2021.day_12 as day_12
+import aoc2021.day_13 as day_13
+import aoc2021.day_14 as day_14
 
 
 def read_file(filename):
@@ -30,26 +33,32 @@ def main():
     content = read_file(filename)
     if day == "01":
         day_01.run(content)
-    if day == "02":
+    elif day == "02":
         day_02.run(content)
-    if day == "03":
+    elif day == "03":
         day_03.run(content)
-    if day == "04":
+    elif day == "04":
         day_04.run(content)
-    if day == "05":
+    elif day == "05":
         day_05.run(content)
-    if day == "06":
+    elif day == "06":
         day_06.run(content)
-    if day == "07":
+    elif day == "07":
         day_07.run(content)
-    if day == "08":
+    elif day == "08":
         day_08.run(content)
-    if day == "09":
+    elif day == "09":
         day_09.run(content)
-    if day == "10":
+    elif day == "10":
         day_10.run(content)
-    if day == "11":
+    elif day == "11":
         day_11.run(content)
+    elif day == "12":
+        day_12.run(content)
+    elif day == "13":
+        day_13.run(content)
+    elif day == "14":
+        day_14.run(content)
 
 
 if __name__ == "__main__":
