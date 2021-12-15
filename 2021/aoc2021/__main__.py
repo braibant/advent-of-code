@@ -15,6 +15,7 @@ import aoc2021.day_11 as day_11
 import aoc2021.day_12 as day_12
 import aoc2021.day_13 as day_13
 import aoc2021.day_14 as day_14
+import aoc2021.day_15 as day_15
 
 
 def read_file(filename):
@@ -59,6 +60,8 @@ def main():
         day_13.run(content)
     elif day == "14":
         day_14.run(content)
+    elif day == "15":
+        day_15.run(content)
 
 
 if __name__ == "__main__":
