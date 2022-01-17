@@ -23,6 +23,7 @@ import aoc2021.day_19 as day_19
 import aoc2021.day_20 as day_20
 import aoc2021.day_21 as day_21
 import aoc2021.day_22 as day_22
+import aoc2021.day_23 as day_23
 import aoc2021.day_24 as day_24
 import aoc2021.day_25 as day_25
 
@@ -85,6 +86,8 @@ def main():
         day_21.run(content)
     elif day == "22":
         day_22.run(content)
+    elif day == "23":
+        day_23.run(content)
     elif day == "24":
         day_24.run(content)
     elif day == "25":
