@@ -1,23 +1,47 @@
-from typing import Tuple, List
+from email.policy import default
+from typing import Tuple, List, FrozenSet
 from collections import defaultdict
 
 
-rotations = set()
-for i in [0, 1, 2]:
-    for j in [0, 1, 2]:
-        for k in [0, 1, 2]:
-            if i != j and i != k and j != k:
-                for si in [-1, 1]:
-                    for sj in [-1, 1]:
-                        for sk in [-1, 1]:
-                            rotations.add((si * i, sj * j, sk * k))
+# If we restrict ourselves to rotations around the x,y,z angles that are
+# multiples of 90 degrees, there should be 24 rotations. This
+# https://www.euclideanspace.com/maths/algebra/matrix/transforms/examples/index.htm
+# is a very useful resource. It describes the 3d matrix encoding of all such 24
+# rotations.
 
+_x = 0
+_y = 1
+_z = 2
 
-def sign(i: int) -> int:
-    if i >= 0:
-        return 1
-    else:
-        return -1
+pos = 1
+neg = -1
+
+rotations = [
+    (((_x, pos), (_y, pos), (_z, pos))),
+    (((_x, pos), (_z, pos), (_y, neg))),
+    (((_x, pos), (_y, neg), (_z, neg))),
+    (((_x, pos), (_z, neg), (_y, pos))),
+    (((_x, neg), (_y, pos), (_z, neg))),
+    (((_x, neg), (_z, neg), (_y, neg))),
+    (((_x, neg), (_y, neg), (_z, pos))),
+    (((_x, neg), (_z, pos), (_y, pos))),
+    (((_y, pos), (_x, pos), (_z, neg))),
+    (((_y, pos), (_z, neg), (_x, neg))),
+    (((_y, pos), (_x, neg), (_z, pos))),
+    (((_y, pos), (_z, pos), (_x, pos))),
+    (((_y, neg), (_x, pos), (_z, pos))),
+    (((_y, neg), (_z, pos), (_x, neg))),
+    (((_y, neg), (_x, neg), (_z, neg))),
+    (((_y, neg), (_z, neg), (_x, pos))),
+    (((_z, pos), (_x, pos), (_y, pos))),
+    (((_z, pos), (_y, pos), (_x, neg))),
+    (((_z, pos), (_x, neg), (_y, neg))),
+    (((_z, pos), (_y, neg), (_x, pos))),
+    (((_z, neg), (_x, pos), (_y, neg))),
+    (((_z, neg), (_y, neg), (_x, neg))),
+    (((_z, neg), (_x, neg), (_y, pos))),
+    (((_z, neg), (_y, pos), (_x, pos))),
+]
 
 
 class Point:
@@ -50,47 +74,18 @@ class Point:
         )
 
     def rotate(self, r):
-        return Point([sign(i) * self.v[abs(i)] for i in r])
+        return Point(tuple([s * self.v[i - 1] for (i, s) in r]))
 
     def sub(self, p: "Point"):
-        return Point(list(map(lambda x: x[0] - x[1], zip(self.v, p.v))))
+        return Point(tuple(map(lambda x: x[0] - x[1], zip(self.v, p.v))))
 
     def add(self, p: "Point"):
-        return Point(list(map(lambda x: x[0] + x[1], zip(self.v, p.v))))
-
-
-def distances(points):
-    dist = set()
-    for i in range(len(points)):
-        for j in range(i + 1, len(points)):
-            p1 = points[i]
-            p2 = points[j]
-            d = p1.distance(p2)
-            dist.add(d)
-    return dist
-
-
-def similarity(p1, p2):
-    d1 = distances(p1)
-    d2 = distances(p2)
-    return len(d1.intersection(d2))
+        return Point(tuple(map(lambda x: x[0] + x[1], zip(self.v, p.v))))
 
 
 def parse_scan(scan: str):
     lines = scan.splitlines()
-    return list(map(Point.from_str, lines[1:]))
-
-
-def match(scan0, scan1):
-    scan0 = set(scan0)
-    for r in rotations:
-        rscan1 = list(map(lambda p: p.rotate(r), scan1))
-        for p in scan0:
-            for rp in rscan1:
-                t = rp.sub(p)
-                trscan1 = set(map(lambda a: a.sub(t), rscan1))
-                if len(scan0.intersection(trscan1)) >= 12:
-                    return r, t
+    return set(map(Point.from_str, lines[1:]))
 
 
 # High level strategy: use similarity of point to point distances between scans
@@ -102,34 +97,38 @@ def match(scan0, scan1):
 # translation T for the pair, which we can then assemble together. Another
 # strategy is to build a big anchor (starting from let's say scan 0), and then
 # fold in each scan.
+
+import itertools
+
+
 def run(input: str):
     scans = list(map(parse_scan, input.split("\n\n")))
-    print(len(rotations))
+    base = scans[0]
+    scans = scans[1:]
+    coords = [Point((0, 0, 0)), Point((1, 0, 0))]
 
-    for i in range(len(scans) - 1):
-        j = max(range(i + 1, len(scans)), key=lambda j: similarity(scans[i], scans[j]))
-        # print(i, j, similarity(scans[i], scans[j]))
-        r, t = match(scans[i], scans[j])
-        print(r, t)
-    # matrix = []
-    # for i in range(len(scanners)):
-    #     row = []
-    #     di = distances(scanners[i])
-    #     row.append("[{}]".format(len(scanners[i])))
-    #     for j in range(len(scanners)):
-    #         if j < i + 1:
-    #             row.append("")
-    #         else:
-    #             dj = distances(scanners[j])
-    #             simi = similarity(di, dj)
-    #             s = "{}".format(simi)
-    #             row.append(s)
-    #     matrix.append(row)
+    while scans:
+        scan = scans.pop(0)
+        progress = False
 
-    # s = [[str(e) for e in row] for row in matrix]
-    # lens = [max(map(len, col)) for col in zip(*s)]
-    # fmt = "\t".join("{{:{}}}".format(x) for x in lens)
-    # table = [fmt.format(*row) for row in s]
-    # print("\n".join(table))
+        for r in rotations:
+            if progress:
+                break
+            offsets = defaultdict(int)
+            for b in base:
+                for p in scan:
+                    rp = p.rotate(r)
+                    offset = rp.sub(b)
+                    offsets[offset] += 1
+            for offset, n in offsets.items():
+                if n >= 12:
+                    progress = True
+                    coords.append(offset)
+                    for p in scan:
+                        rp = p.rotate(r)
+                        base.add(rp.sub(offset))
+        if not progress:
+            scans.append(scan)
+    print(len(base))
 
-    # print("\n".join(["\t".join([str(cell) for cell in row]) for row in matrix]))
+    print(max(a.distance(b) for a, b in itertools.product(coords, coords)))
